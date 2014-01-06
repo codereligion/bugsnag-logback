@@ -1,0 +1,9 @@
+target
+pom.xml.releaseBackup
+release.properties
+
+#intellij idea
+*.iml
+*.ipr
+*.iws
+*.idea
