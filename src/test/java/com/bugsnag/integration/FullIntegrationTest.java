@@ -1,12 +1,14 @@
 package com.bugsnag.integration;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Context;
 import com.bugsnag.Appender;
+import com.bugsnag.GsonProvider;
+import com.bugsnag.model.MockMetaDataVO;
 import com.bugsnag.model.MockNotificationVO;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.junit.Before;
@@ -37,7 +39,7 @@ public class FullIntegrationTest {
 
     private Appender appender = spy(new Appender());
 
-    private final Gson gson = new GsonBuilder().create();
+    private final Gson gson = new GsonProvider().getGson();
 
     @Before
     public void beforeEachTest() {
@@ -53,6 +55,7 @@ public class FullIntegrationTest {
 
         // given
         appender.setProjectPackages("some.project.package");
+        appender.setMetaDataProvider(CustomMetaDataProvider.class.getCanonicalName());
 
         stubFor(post(urlEqualTo("/"))
                 .withHeader("Accept", equalTo(MediaType.APPLICATION_JSON))
@@ -61,6 +64,8 @@ public class FullIntegrationTest {
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON)));
 
         final ILoggingEvent loggingEvent = createLoggingEvent()
+                .withLevel(Level.ERROR)
+                .withMessage("someMessage")
                 .withMdcProperty("userId", "someUserId")
                 .withSystemProperty("appVersion", "someAppVersion")
                 .withSystemProperty("osVersion", "someOsVersion") // TODO does this really make sense
@@ -99,6 +104,9 @@ public class FullIntegrationTest {
                         .withOsVersion("someOsVersion")
                         .withContext("someContext")
                         .withGroupingHash("someGroupingHash")
+                        .with(MockMetaDataVO.createMetaDataVO()
+                            .add("Logging", "level", "ERROR")
+                            .add("Logging", "message", "someMessage"))
                         .add(createExceptionVO()
                                 .withErrorClass("some.project.package.Class")
                                 .withMessage("some message")
@@ -128,4 +136,5 @@ public class FullIntegrationTest {
         // then
         verify(1, postRequestedFor(urlEqualTo("/")).withRequestBody(equalToJson(gson.toJson(notification))));
     }
+
 }

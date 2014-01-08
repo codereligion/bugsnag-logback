@@ -6,6 +6,7 @@ import com.bugsnag.model.NotificationVO;
 import com.bugsnag.resource.GsonMessageBodyReader;
 import com.bugsnag.resource.GsonMessageBodyWriter;
 import com.bugsnag.resource.NotifierResource;
+import com.google.gson.Gson;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
@@ -17,6 +18,15 @@ class Sender {
     private Configuration configuration;
     private ContextAware contextAware;
     private Converter converter;
+    private GsonProvider gsonProvider;
+
+    public Sender() {
+        this(new GsonProvider());
+    }
+
+    Sender(final GsonProvider gsonProvider) {
+        this.gsonProvider = gsonProvider;
+    }
 
     public void start(final Configuration configuration,  final ContextAware contextAware) {
         start(configuration, contextAware, new Converter(configuration));
@@ -31,8 +41,11 @@ class Sender {
 
     private Client createClient() {
         final Client client = ClientBuilder.newClient();
-        client.register(new GsonMessageBodyReader());
-        client.register(new GsonMessageBodyWriter());
+        final Gson gson = gsonProvider.getGson();
+
+        client.register(new GsonMessageBodyReader(gson));
+        client.register(new GsonMessageBodyWriter(gson));
+
         return client;
     }
 

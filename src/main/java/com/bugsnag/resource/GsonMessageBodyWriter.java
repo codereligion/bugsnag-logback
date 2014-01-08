@@ -2,7 +2,6 @@ package com.bugsnag.resource;
 
 import com.google.common.base.Charsets;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -18,7 +17,11 @@ import javax.ws.rs.ext.Provider;
 @Produces(MediaType.APPLICATION_JSON)
 public class GsonMessageBodyWriter implements MessageBodyWriter<Object> {
 
-    private Gson gson = new GsonBuilder().create();
+    private final Gson gson;
+
+    public GsonMessageBodyWriter(final Gson gson) {
+        this.gson = gson;
+    }
 
 	@Override
 	public boolean isWriteable(final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType) {

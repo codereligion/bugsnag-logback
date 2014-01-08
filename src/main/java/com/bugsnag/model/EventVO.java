@@ -55,6 +55,14 @@ public class EventVO {
     private String groupingHash;
 
     /**
+     * An object containing any further data you wish to attach to this error
+     * event. This should contain one or more objects, with each object being
+     * displayed in its own tab on the event details on the Bugsnag website.
+     * (Optional).
+     */
+    private MetaDataVO metaData;
+
+    /**
      * An array of exceptions that occurred during this event. Most of the
      * time there will only be one exception, but some languages support
      * "nested" or "caused by" exceptions. In this case, exceptions should
@@ -109,6 +117,14 @@ public class EventVO {
 
     public void setGroupingHash(String groupingHash) {
         this.groupingHash = groupingHash;
+    }
+
+    public MetaDataVO getMetaData() {
+        return metaData;
+    }
+
+    public void setMetaData(MetaDataVO metaData) {
+        this.metaData = metaData;
     }
 
     public List<ExceptionVO> getExceptions() {

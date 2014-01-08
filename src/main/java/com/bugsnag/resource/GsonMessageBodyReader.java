@@ -2,7 +2,6 @@ package com.bugsnag.resource;
 
 import com.google.common.base.Charsets;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -18,9 +17,13 @@ import org.apache.commons.io.IOUtils;
 @Consumes(MediaType.APPLICATION_JSON)
 public class GsonMessageBodyReader implements MessageBodyReader<Object> {
 
-	private Gson gson = new GsonBuilder().create();
-	
-	@Override
+	private final Gson gson;
+
+    public GsonMessageBodyReader(final Gson gson) {
+        this.gson = gson;
+    }
+
+    @Override
 	public boolean isReadable(final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType) {
 		return true;
 	}

@@ -21,6 +21,7 @@ class Configuration {
     private Set<String> filters = Sets.newHashSet(DEFAULT_FILTERED_ELEMENT);
     private Set<String> projectPackages = Sets.newHashSet();
     private Set<String> ignoreClasses = Sets.newHashSet();
+    private String metaDataProviderClassName;
 
     public String getEndpoint() {
         return endpoint;
@@ -104,6 +105,18 @@ class Configuration {
 
     public void setIgnoreClasses(Set<String> ignoreClasses) {
         this.ignoreClasses = ignoreClasses;
+    }
+
+    public boolean hasMetaDataProvider() {
+        return getMetaDataProviderClassName() != null;
+    }
+
+    public String getMetaDataProviderClassName() {
+        return metaDataProviderClassName;
+    }
+
+    public void setMetaDataProviderClassName(String metaDataProviderClassName) {
+        this.metaDataProviderClassName = metaDataProviderClassName;
     }
 
     public boolean stageIsIgnored() {

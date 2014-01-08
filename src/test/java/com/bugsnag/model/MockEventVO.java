@@ -40,4 +40,9 @@ public class MockEventVO extends EventVO {
         setGroupingHash(groupingHash);
         return this;
     }
+
+    public MockEventVO with(final MetaDataVO metaData) {
+        setMetaData(metaData);
+        return this;
+    }
 }

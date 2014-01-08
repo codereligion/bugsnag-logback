@@ -23,15 +23,6 @@ public class NotificationVO {
      */
     private List<EventVO> events = Lists.newArrayList();
 
-    // TODO
-//    /**
-//     * An object containing any further data you wish to attach to this error
-//     * event. This should contain one or more objects, with each object being
-//     * displayed in its own tab on the event details on the Bugsnag website.
-//     * (Optional).
-//     */
-//    private Object metaData;
-
     public String getApiKey() {
         return apiKey;
     }
@@ -47,12 +38,4 @@ public class NotificationVO {
     public void setEvents(List<EventVO> events) {
         this.events = events;
     }
-
-//    public Object getMetaData() {
-//        return metaData;
-//    }
-//
-//    public void setMetaData(Object metaData) {
-//        this.metaData = metaData;
-//    }
 }

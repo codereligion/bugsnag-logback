@@ -5,6 +5,7 @@ import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.StackTraceElementProxy;
 import com.bugsnag.model.EventVO;
 import com.bugsnag.model.ExceptionVO;
+import com.bugsnag.model.MetaDataVO;
 import com.bugsnag.model.NotificationVO;
 import com.bugsnag.model.StackTraceVO;
 import com.google.common.collect.Lists;
@@ -20,9 +21,32 @@ class Converter {
     public static final String GROUPING_HASH = "groupingHash";
 
     private final Configuration configuration;
+    private final MetaDataProvider metaDataProvider;
 
     Converter(final Configuration configuration) {
         this.configuration = configuration;
+        this.metaDataProvider = initializeMetaDataProvider();
+    }
+
+    private MetaDataProvider initializeMetaDataProvider() {
+        // TODO maybe initialization should be done somewhere else
+        if (configuration.hasMetaDataProvider()) {
+
+            try {
+                final Class<?> metaDataProviderClass = Class.forName(configuration.getMetaDataProviderClassName());
+                return (MetaDataProvider) metaDataProviderClass.newInstance();
+            } catch (final InstantiationException e) {
+                // TODO find better wrapper
+                throw new RuntimeException(e);
+            } catch (final IllegalAccessException e) {
+                // TODO find better wrapper
+                throw new RuntimeException(e);
+            } catch (final ClassNotFoundException e) {
+                // TODO find better wrapper
+                throw new  RuntimeException(e);
+            }
+        }
+        return null;
     }
 
     public NotificationVO convertToNotification(final ILoggingEvent event) {
@@ -36,12 +60,20 @@ class Converter {
         final EventVO event = new EventVO();
         event.setReleaseStage(configuration.getReleaseStage());
         event.setExceptions(convertToExceptions(loggingEvent.getThrowableProxy()));
+        event.setMetaData(convertToMetaData(loggingEvent));
         event.setUserId(getValueFor(loggingEvent, USER_ID));
         event.setAppVersion(getValueFor(loggingEvent, APP_VERSION));
         event.setOsVersion(getValueFor(loggingEvent, OS_VERSION));
         event.setContext(getValueFor(loggingEvent, CONTEXT));
         event.setGroupingHash(getValueFor(loggingEvent, GROUPING_HASH));
         return Collections.singletonList(event);
+    }
+
+    private MetaDataVO convertToMetaData(final ILoggingEvent loggingEvent) {
+        if (metaDataProvider != null) {
+            return metaDataProvider.provide(loggingEvent);
+        }
+        return null;
     }
 
     private String getValueFor(final ILoggingEvent loggingEvent, final String key) {

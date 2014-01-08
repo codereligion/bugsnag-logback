@@ -87,6 +87,10 @@ public class Appender extends AppenderBase<ILoggingEvent> {
         this.configuration.setIgnoreClasses(splitByCommaToArray(ignoreClasses));
     }
 
+    public void setMetaDataProvider(final String metaDataProviderClassName) {
+        this.configuration.setMetaDataProviderClassName(metaDataProviderClassName);
+    }
+
     private Set<String> splitByCommaToArray(final String input) {
         return Sets.newHashSet(Splitter.on(",").trimResults().split(input));
     }
