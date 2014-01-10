@@ -6,7 +6,6 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
 import java.util.Set;
 
-// TODO implement meta data template
 public class Appender extends AppenderBase<ILoggingEvent> {
 
     private final Configuration configuration;
