@@ -4,13 +4,12 @@ import ch.qos.logback.core.spi.ContextAware;
 import com.google.common.collect.Sets;
 import java.util.Set;
 
-class Configuration {
+public class Configuration {
     public static final String DEFAULT_ENDPOINT = "notify.bugsnag.com";
     public static final boolean DEFAULT_AUTO_NOTIFY = true;
     public static final boolean DEFAULT_USE_SSL = false;
     public static final String PROTOCOL_HOST_SEPARATOR = "://";
     public static final String DEFAULT_RELEASE_STAGE = "production";
-    public static final String DEFAULT_FILTERED_ELEMENT = "password";
 
     private String endpoint = DEFAULT_ENDPOINT;
     private String apiKey;
@@ -18,7 +17,7 @@ class Configuration {
     private boolean autoNotify = DEFAULT_AUTO_NOTIFY;
     private boolean useSSL = DEFAULT_USE_SSL;
     private Set<String> notifyReleaseStages = Sets.newHashSet();
-    private Set<String> filters = Sets.newHashSet(DEFAULT_FILTERED_ELEMENT);
+    private Set<String> filters = Sets.newHashSet();
     private Set<String> projectPackages = Sets.newHashSet();
     private Set<String> ignoreClasses = Sets.newHashSet();
     private String metaDataProviderClassName;
@@ -128,8 +127,12 @@ class Configuration {
         return !getNotifyReleaseStages().contains(getReleaseStage());
     }
 
-    public boolean shouldNotifyFor(String className) {
+    public boolean shouldNotifyFor(final String className) {
         return !getIgnoreClasses().contains(className);
+    }
+
+    public boolean isIgnoredByFilter(final String key) {
+        return getFilters().contains(key);
     }
 
     public boolean isInvalid() {
