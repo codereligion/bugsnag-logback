@@ -4,8 +4,8 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Context;
 import com.bugsnag.Appender;
+import com.bugsnag.Configuration;
 import com.bugsnag.GsonProvider;
-import com.bugsnag.model.MockMetaDataVO;
 import com.bugsnag.model.MockNotificationVO;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.gson.Gson;
@@ -19,11 +19,11 @@ import static com.bugsnag.logging.MockStackTraceElement.createStackTraceElement;
 import static com.bugsnag.logging.MockThrowableProxy.createThrowableProxy;
 import static com.bugsnag.model.MockEventVO.createEventVO;
 import static com.bugsnag.model.MockExceptionVO.createExceptionVO;
+import static com.bugsnag.model.MockMetaDataVO.createMetaDataVO;
 import static com.bugsnag.model.MockNotificationVO.createNotificationVO;
 import static com.bugsnag.model.MockStackTraceVO.createStackTraceVO;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
@@ -32,14 +32,14 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
-public class FullIntegrationTest {
+public class SerializationFullIntegrationTest {
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(8089);
 
     private Appender appender = spy(new Appender());
 
-    private final Gson gson = new GsonProvider().getGson();
+    private final Gson gson = new GsonProvider(new Configuration()).getGson();
 
     @Before
     public void beforeEachTest() {
@@ -51,11 +51,12 @@ public class FullIntegrationTest {
     }
 
     @Test
-    public void serializesEventCorrectly() {
+    public void serializesNotificationCorrectly() {
 
         // given
         appender.setProjectPackages("some.project.package");
         appender.setMetaDataProvider(CustomMetaDataProvider.class.getCanonicalName());
+        appender.setFilters("password");
 
         stubFor(post(urlEqualTo("/"))
                 .withHeader("Accept", equalTo(MediaType.APPLICATION_JSON))
@@ -67,8 +68,9 @@ public class FullIntegrationTest {
                 .withLevel(Level.ERROR)
                 .withMessage("someMessage")
                 .withMdcProperty("userId", "someUserId")
+                .withMdcProperty("password", "v3rys3cr3t")
                 .withSystemProperty("appVersion", "someAppVersion")
-                .withSystemProperty("osVersion", "someOsVersion") // TODO does this really make sense
+                .withSystemProperty("osVersion", "someOsVersion")
                 .withContextProperty("context", "someContext")
                 .withContextProperty("groupingHash", "someGroupingHash")
                 .withThrowableProxy(
@@ -93,9 +95,10 @@ public class FullIntegrationTest {
                                                         .withMethodName("someOtherMethodName")
                                         )
                                 )
-                );
+                )
+                ;
 
-        final MockNotificationVO notification = createNotificationVO()
+        final MockNotificationVO expectedNotification = createNotificationVO()
                 .withApiKey("someApiKey")
                 .add(createEventVO()
                         .withReleaseStage("test")
@@ -104,9 +107,11 @@ public class FullIntegrationTest {
                         .withOsVersion("someOsVersion")
                         .withContext("someContext")
                         .withGroupingHash("someGroupingHash")
-                        .with(MockMetaDataVO.createMetaDataVO()
-                            .add("Logging", "level", "ERROR")
-                            .add("Logging", "message", "someMessage"))
+                        .with(createMetaDataVO()
+                                .add("Logging", "level", "ERROR")
+                                .add("Logging", "message", "someMessage")
+                                .add("User", null, null)
+                        )
                         .add(createExceptionVO()
                                 .withErrorClass("some.project.package.Class")
                                 .withMessage("some message")
@@ -134,7 +139,7 @@ public class FullIntegrationTest {
         appender.doAppend(loggingEvent);
 
         // then
-        verify(1, postRequestedFor(urlEqualTo("/")).withRequestBody(equalToJson(gson.toJson(notification))));
+        verify(1, postRequestedFor(urlEqualTo("/")).withRequestBody(equalTo(gson.toJson(expectedNotification))));
     }
 
 }

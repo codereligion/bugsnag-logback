@@ -7,8 +7,9 @@ public class MetaDataVO {
 
     private Map<String, TabVO> nameToTab = new HashMap<String, TabVO>();
 
-    public void addToTab(final String tabName, final String key, final Object value) {
+    public MetaDataVO addToTab(final String tabName, final String key, final Object value) {
         getAndEnsureTabExistence(tabName).add(key, value);
+        return this;
     }
 
     private TabVO getAndEnsureTabExistence(final String tabName) {

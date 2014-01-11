@@ -12,7 +12,7 @@ import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
 
-class Converter {
+public class Converter {
 
     public static final String USER_ID = "userId";
     public static final String APP_VERSION = "appVersion";
@@ -23,7 +23,7 @@ class Converter {
     private final Configuration configuration;
     private final MetaDataProvider metaDataProvider;
 
-    Converter(final Configuration configuration) {
+   public Converter(final Configuration configuration) {
         this.configuration = configuration;
         this.metaDataProvider = initializeMetaDataProvider();
     }

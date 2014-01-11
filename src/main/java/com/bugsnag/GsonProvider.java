@@ -8,10 +8,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 public class GsonProvider {
-    private Gson gson = new GsonBuilder()
-            .registerTypeAdapter(MetaDataVO.class, new MetaDataVOSerializer())
-            .registerTypeAdapter(TabVO.class, new TabVOSerializer())
-            .create();
+    private final Gson gson;
+
+    public GsonProvider(final Configuration configuration) {
+        this.gson = new GsonBuilder()
+                .registerTypeAdapter(MetaDataVO.class, new MetaDataVOSerializer())
+                .registerTypeAdapter(TabVO.class, new TabVOSerializer(configuration))
+                .create();
+    }
 
     public Gson getGson() {
         return gson;

@@ -11,6 +11,7 @@ public class CustomMetaDataProvider implements MetaDataProvider {
         final MetaDataVO metaDataVO = new MetaDataVO();
         metaDataVO.addToTab("Logging", "level", loggingEvent.getLevel().toString());
         metaDataVO.addToTab("Logging", "message", loggingEvent.getMessage());
+        metaDataVO.addToTab("User", "password", loggingEvent.getMDCPropertyMap().get("password"));
         return metaDataVO;
     }
 }

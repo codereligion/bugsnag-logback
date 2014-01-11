@@ -90,18 +90,18 @@ public class MockLoggingEvent implements ILoggingEvent {
         return this;
     }
 
-    public MockLoggingEvent withMdcProperty(String key, String value) {
+    public MockLoggingEvent withMdcProperty(final String key, final String value) {
         this.mdcPropertyMap.put(key, value);
         return this;
     }
 
-    public MockLoggingEvent withContextProperty(String key, String value) {
+    public MockLoggingEvent withContextProperty(final String key, final String value) {
         this.loggerContextVO.getPropertyMap().put(key, value);
         return this;
     }
 
 
-    public MockLoggingEvent withSystemProperty(String key, String value) {
+    public MockLoggingEvent withSystemProperty(final String key, final String value) {
         System.setProperty(key, value);
         return this;
     }
