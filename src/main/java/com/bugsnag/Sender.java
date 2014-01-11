@@ -5,6 +5,7 @@ import ch.qos.logback.core.spi.ContextAware;
 import com.bugsnag.model.NotificationVO;
 import com.bugsnag.resource.GsonMessageBodyReader;
 import com.bugsnag.resource.GsonMessageBodyWriter;
+import com.bugsnag.resource.GsonProvider;
 import com.bugsnag.resource.NotifierResource;
 import com.google.gson.Gson;
 import javax.ws.rs.client.Client;
@@ -12,31 +13,20 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
-// TODO do not initialize client with every send
-class Sender {
+public class Sender {
 
     private Configuration configuration;
     private ContextAware contextAware;
     private Converter converter;
     private GsonProvider gsonProvider;
-
-    public Sender() {
-        this(new GsonProvider());
-    }
-
-    Sender(final GsonProvider gsonProvider) {
-        this.gsonProvider = gsonProvider;
-    }
+    private Client client;
 
     public void start(final Configuration configuration,  final ContextAware contextAware) {
-        start(configuration, contextAware, new Converter(configuration));
-    }
-
-    void start(final Configuration configuration, final ContextAware contextAware, final Converter converter) {
         this.configuration = configuration;
         this.contextAware = contextAware;
-        this.converter = converter;
-
+        this.converter = new Converter(configuration);
+        this.gsonProvider = new GsonProvider(configuration);
+        this.client = createClient();
     }
 
     private Client createClient() {
@@ -50,14 +40,13 @@ class Sender {
     }
 
     public void send(final ILoggingEvent event) {
-        Client client = null;
+        Response response = null;
 
         try {
-            client = createClient();
             final ResteasyWebTarget resteasyWebTarget = (ResteasyWebTarget) client.target(configuration.getEndpointWithProtocol());
             final NotifierResource notifierResource= resteasyWebTarget.proxy(NotifierResource.class);
             final NotificationVO notification = converter.convertToNotification(event);
-            final Response response = notifierResource.sendNotification(notification);
+            response = notifierResource.sendNotification(notification);
             final Response.StatusType statusInfo = response.getStatusInfo();
 
             switch(statusInfo.getStatusCode()) {
@@ -69,8 +58,8 @@ class Sender {
                 default: contextAware.addError("Unexpected response code:" + statusInfo);
             }
         } finally {
-            if (client != null) {
-                client.close();
+            if (response != null) {
+                response.close();
             }
         }
     }

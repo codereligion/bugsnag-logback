@@ -58,7 +58,7 @@ public class AppenderTest {
     public void doesNotAppendWhenReleaseStageIsIgnored() {
         // given
         final ILoggingEvent loggingEvent = createLoggingEvent()
-                .withThrowableProxy(createThrowableProxy());
+                .with(createThrowableProxy());
 
         appender.setNotifyReleaseStages("staging,production");
         appender.setReleaseStage("test");
@@ -75,7 +75,7 @@ public class AppenderTest {
     public void doesNotAppendWhenExceptionClassIsIgnored() {
         // given
         final ILoggingEvent loggingEvent = createLoggingEvent()
-                .withThrowableProxy(
+                .with(
                         createThrowableProxy().withClassName("some.foo.Bar"));
 
         appender.setIgnoreClasses("some.foo.Bar");
@@ -96,7 +96,7 @@ public class AppenderTest {
 
         // when
         appender.start();
-        final MockLoggingEvent loggingEvent = createLoggingEvent().withThrowableProxy(createThrowableProxy());
+        final MockLoggingEvent loggingEvent = createLoggingEvent().with(createThrowableProxy());
         appender.doAppend(loggingEvent);
 
         // then
@@ -108,7 +108,7 @@ public class AppenderTest {
 
         // when
         appender.start();
-        final MockLoggingEvent loggingEvent = createLoggingEvent().withThrowableProxy(createThrowableProxy());
+        final MockLoggingEvent loggingEvent = createLoggingEvent().with(createThrowableProxy());
         appender.doAppend(loggingEvent);
 
         // then

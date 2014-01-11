@@ -5,7 +5,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Context;
 import com.bugsnag.Appender;
 import com.bugsnag.Configuration;
-import com.bugsnag.GsonProvider;
+import com.bugsnag.resource.GsonProvider;
 import com.bugsnag.model.MockNotificationVO;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.gson.Gson;
@@ -73,8 +73,7 @@ public class SerializationFullIntegrationTest {
                 .withSystemProperty("osVersion", "someOsVersion")
                 .withContextProperty("context", "someContext")
                 .withContextProperty("groupingHash", "someGroupingHash")
-                .withThrowableProxy(
-                        createThrowableProxy()
+                .with(createThrowableProxy()
                                 .withClassName("some.project.package.Class")
                                 .withMessage("some message")
                                 .addStackTraceElementProxy(

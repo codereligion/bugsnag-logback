@@ -1,9 +1,8 @@
-package com.bugsnag;
+package com.bugsnag.resource;
 
+import com.bugsnag.Configuration;
 import com.bugsnag.model.MetaDataVO;
 import com.bugsnag.model.TabVO;
-import com.bugsnag.resource.MetaDataVOSerializer;
-import com.bugsnag.resource.TabVOSerializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 

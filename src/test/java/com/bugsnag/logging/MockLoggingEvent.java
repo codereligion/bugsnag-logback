@@ -80,12 +80,12 @@ public class MockLoggingEvent implements ILoggingEvent {
         return this;
     }
 
-    public MockLoggingEvent withLoggerContextVO(final LoggerContextVO loggerContextVO) {
+    public MockLoggingEvent with(final LoggerContextVO loggerContextVO) {
         this.loggerContextVO = loggerContextVO;
         return this;
     }
 
-    public MockLoggingEvent withStackTraceElements(final StackTraceElement[] stackTraceElements) {
+    public MockLoggingEvent with(final StackTraceElement[] stackTraceElements) {
         this.stackTraceElements = stackTraceElements;
         return this;
     }
@@ -111,7 +111,7 @@ public class MockLoggingEvent implements ILoggingEvent {
         return this;
     }
 
-    public MockLoggingEvent withThrowableProxy(final MockThrowableProxy throwableProxy) {
+    public MockLoggingEvent with(final MockThrowableProxy throwableProxy) {
         this.throwableProxy = throwableProxy;
         return this;
     }
