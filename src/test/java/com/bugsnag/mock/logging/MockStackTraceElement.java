@@ -1,4 +1,4 @@
-package com.bugsnag.logging;
+package com.bugsnag.mock.logging;
 
 import ch.qos.logback.classic.spi.StackTraceElementProxy;
 

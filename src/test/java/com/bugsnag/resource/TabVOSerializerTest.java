@@ -2,7 +2,7 @@ package com.bugsnag.resource;
 
 import com.bugsnag.Configuration;
 import com.bugsnag.model.TabVO;
-import com.bugsnag.model.User;
+import com.bugsnag.mock.business.User;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

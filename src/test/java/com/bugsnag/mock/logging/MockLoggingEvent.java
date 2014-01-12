@@ -11,7 +11,7 @@
  * under the terms of the GNU Lesser General Public License version 2.1
  * as published by the Free Software Foundation.
  */
-package com.bugsnag.logging;
+package com.bugsnag.mock.logging;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -187,6 +187,7 @@ public class MockLoggingEvent implements ILoggingEvent {
     }
 
     @Override
+    @Deprecated
     public Map<String, String> getMdc() {
         return getMDCPropertyMap();
     }

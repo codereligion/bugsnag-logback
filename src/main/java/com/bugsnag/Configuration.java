@@ -1,26 +1,26 @@
 package com.bugsnag;
 
 import ch.qos.logback.core.spi.ContextAware;
+import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import java.util.Set;
 
 public class Configuration {
-    public static final String DEFAULT_ENDPOINT = "notify.bugsnag.com";
-    public static final boolean DEFAULT_AUTO_NOTIFY = true;
-    public static final boolean DEFAULT_USE_SSL = false;
-    public static final String PROTOCOL_HOST_SEPARATOR = "://";
-    public static final String DEFAULT_RELEASE_STAGE = "production";
+    private static final String DEFAULT_ENDPOINT = "notify.bugsnag.com";
+    private static final boolean DEFAULT_USE_SSL = false;
+    private static final String DEFAULT_RELEASE_STAGE = "production";
+    private static final String PROTOCOL_HOST_SEPARATOR = "://";
 
     private String endpoint = DEFAULT_ENDPOINT;
     private String apiKey;
     private String releaseStage = DEFAULT_RELEASE_STAGE;
-    private boolean autoNotify = DEFAULT_AUTO_NOTIFY;
-    private boolean useSSL = DEFAULT_USE_SSL;
+    private boolean sslEnabled = DEFAULT_USE_SSL;
     private Set<String> notifyReleaseStages = Sets.newHashSet();
     private Set<String> filters = Sets.newHashSet();
     private Set<String> projectPackages = Sets.newHashSet();
     private Set<String> ignoreClasses = Sets.newHashSet();
-    private String metaDataProviderClassName;
+    private Optional<String> metaDataProviderClassName = Optional.absent();
 
     public String getEndpoint() {
         return endpoint;
@@ -29,7 +29,7 @@ public class Configuration {
     public String getEndpointWithProtocol() {
 
         final String protocol;
-        if (useSSL) {
+        if (sslEnabled) {
             protocol = "https";
         } else {
             protocol = "http";
@@ -58,48 +58,24 @@ public class Configuration {
         this.releaseStage = releaseStage;
     }
 
-    public boolean isAutoNotify() {
-        return autoNotify;
+    public boolean isSslEnabled() {
+        return sslEnabled;
     }
 
-    public void setAutoNotify(boolean autoNotify) {
-        this.autoNotify = autoNotify;
-    }
-
-    public boolean useSSL() {
-        return useSSL;
-    }
-
-    public void setUseSSL(boolean useSSL) {
-        this.useSSL = useSSL;
-    }
-
-    public Set<String> getNotifyReleaseStages() {
-        return notifyReleaseStages;
+    public void setSslEnabled(boolean sslEnabled) {
+        this.sslEnabled = sslEnabled;
     }
 
     public void setNotifyReleaseStages(Set<String> notifyReleaseStages) {
         this.notifyReleaseStages = notifyReleaseStages;
     }
 
-    public Set<String> getFilters() {
-        return filters;
-    }
-
     public void setFilters(Set<String> filters) {
         this.filters = filters;
     }
 
-    public Set<String> getProjectPackages() {
-        return projectPackages;
-    }
-
     public void setProjectPackages(Set<String> projectPackages) {
         this.projectPackages = projectPackages;
-    }
-
-    public Set<String> getIgnoreClasses() {
-        return ignoreClasses;
     }
 
     public void setIgnoreClasses(Set<String> ignoreClasses) {
@@ -107,40 +83,92 @@ public class Configuration {
     }
 
     public boolean hasMetaDataProvider() {
-        return getMetaDataProviderClassName() != null;
+        return metaDataProviderClassName.isPresent();
     }
 
-    public String getMetaDataProviderClassName() {
+    public Optional<String> getMetaDataProviderClassName() {
         return metaDataProviderClassName;
     }
 
     public void setMetaDataProviderClassName(String metaDataProviderClassName) {
-        this.metaDataProviderClassName = metaDataProviderClassName;
+        this.metaDataProviderClassName = Optional.fromNullable(metaDataProviderClassName);
     }
 
-    public boolean stageIsIgnored() {
+    public boolean isStageIgnored() {
 
-        if (getNotifyReleaseStages().isEmpty()) {
+        if (notifyReleaseStages.isEmpty()) {
             return false;
         }
 
-        return !getNotifyReleaseStages().contains(getReleaseStage());
+        return !notifyReleaseStages.contains(releaseStage);
+    }
+
+    public boolean isInProject(final String className) {
+
+        for (final String packageName : projectPackages) {
+            if (className.startsWith(packageName)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public boolean shouldNotifyFor(final String className) {
-        return !getIgnoreClasses().contains(className);
+        return !ignoreClasses.contains(className);
     }
 
     public boolean isIgnoredByFilter(final String key) {
-        return getFilters().contains(key);
+        return filters.contains(key);
     }
 
     public boolean isInvalid() {
-        // TODO
-        return true;
+        return isEndpointInvalid() ||
+                isApiKeyInvalid() ||
+                isReleaseStageInvalid() ||
+                isMetaProviderClassNameInValid();
     }
 
-    public void addErrors(ContextAware contextAware) {
-        // TODO
+    public boolean isEndpointInvalid() {
+        return Strings.isNullOrEmpty(endpoint);
+    }
+
+    public boolean isApiKeyInvalid() {
+        return Strings.isNullOrEmpty(apiKey);
+    }
+
+    public boolean isReleaseStageInvalid() {
+        return Strings.isNullOrEmpty(releaseStage);
+    }
+
+    public boolean isMetaProviderClassNameInValid() {
+        if (metaDataProviderClassName.isPresent()) {
+            try {
+                Class.forName(metaDataProviderClassName.get());
+            } catch (final ClassNotFoundException e) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void addErrors(final ContextAware contextAware) {
+        if (isEndpointInvalid()) {
+            contextAware.addError("endpoint must not be null nor empty");
+        }
+
+        if (isApiKeyInvalid()) {
+            contextAware.addError("apiKey must not be null nor empty");
+        }
+
+        if (isReleaseStageInvalid()) {
+            contextAware.addError("releaseStage must not be null nor empty");
+        }
+
+        if (isMetaProviderClassNameInValid()) {
+            contextAware.addError("Could not instantiate class: " + getMetaDataProviderClassName().get() + ". " +
+                "Make sure that you provided the fully qualified class name and that the class has public access.");
+        }
     }
 }

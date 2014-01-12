@@ -1,4 +1,4 @@
-package com.bugsnag.model;
+package com.bugsnag.mock.business;
 
 public class User {
     private String email;

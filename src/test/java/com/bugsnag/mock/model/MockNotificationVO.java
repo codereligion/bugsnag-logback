@@ -1,4 +1,7 @@
-package com.bugsnag.model;
+package com.bugsnag.mock.model;
+
+import com.bugsnag.model.EventVO;
+import com.bugsnag.model.NotificationVO;
 
 public class MockNotificationVO extends NotificationVO {
 

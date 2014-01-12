@@ -31,9 +31,15 @@ public class Appender extends AppenderBase<ILoggingEvent> {
     }
 
     @Override
+    public void stop() {
+        sender.stop();
+        super.stop();
+    }
+
+    @Override
     protected void append(final ILoggingEvent event) {
 
-        if (!isStarted() || configuration.stageIsIgnored()) {
+        if (!isStarted() || configuration.isStageIgnored()) {
             return;
         }
 
@@ -50,8 +56,8 @@ public class Appender extends AppenderBase<ILoggingEvent> {
         return configuration.shouldNotifyFor(event.getThrowableProxy().getClassName());
     }
 
-    public void setUseSSL(final boolean useSSL) {
-        this.configuration.setUseSSL(useSSL);
+    public void setSslEnabled(final boolean sslEnabled) {
+        this.configuration.setSslEnabled(sslEnabled);
     }
 
     public void setEndpoint(final String endpoint) {
@@ -64,10 +70,6 @@ public class Appender extends AppenderBase<ILoggingEvent> {
 
     public void setReleaseStage(final String releaseStage) {
         this.configuration.setReleaseStage(releaseStage);
-    }
-
-    public void setAutoNotify(final boolean autoNotify) {
-        this.configuration.setAutoNotify(autoNotify);
     }
 
     public void setNotifyReleaseStages(final String notifyReleaseStages) {

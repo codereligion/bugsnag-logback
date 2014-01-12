@@ -1,4 +1,6 @@
-package com.bugsnag.model;
+package com.bugsnag.mock.model;
+
+import com.bugsnag.model.MetaDataVO;
 
 public class MockMetaDataVO extends MetaDataVO {
 

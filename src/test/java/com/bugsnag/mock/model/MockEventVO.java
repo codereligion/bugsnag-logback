@@ -1,4 +1,8 @@
-package com.bugsnag.model;
+package com.bugsnag.mock.model;
+
+import com.bugsnag.model.EventVO;
+import com.bugsnag.model.ExceptionVO;
+import com.bugsnag.model.MetaDataVO;
 
 public class MockEventVO extends EventVO {
 

@@ -1,7 +1,7 @@
 package com.bugsnag;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import com.bugsnag.logging.MockLoggingEvent;
+import com.bugsnag.mock.logging.MockLoggingEvent;
 import com.bugsnag.resource.NotifierResource;
 import javax.ws.rs.client.Client;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -12,8 +12,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import static com.bugsnag.logging.MockLoggingEvent.createLoggingEvent;
-import static com.bugsnag.logging.MockThrowableProxy.createThrowableProxy;
+import static com.bugsnag.mock.logging.MockLoggingEvent.createLoggingEvent;
+import static com.bugsnag.mock.logging.MockThrowableProxy.createThrowableProxy;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
@@ -27,12 +27,13 @@ import static org.mockito.Mockito.when;
 public class AppenderTest {
 
     // TODO test that start sets start flag
-    // TODO test that configuration is passed to client
-    // TODO test conversion of string to array of strings
-    // TODO test corner cases of configuration (null, empty strings)
-    // TODO test default values of configuration
+    // TODO all configuration values are passed on
+    // TODO test that configuration is passed to sender
     // TODO test that append does not appender if not started
     // TODO test that only exceptions are send
+    // TODO test that excluded exceptions are not send
+    // TODO test that nothing is send when stage is ignored
+    // TODO test that sender lifecycle is maintained correctly
 
     @Mock
     private Client client;

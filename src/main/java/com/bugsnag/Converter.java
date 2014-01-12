@@ -8,6 +8,7 @@ import com.bugsnag.model.ExceptionVO;
 import com.bugsnag.model.MetaDataVO;
 import com.bugsnag.model.NotificationVO;
 import com.bugsnag.model.StackTraceVO;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
@@ -21,32 +22,29 @@ public class Converter {
     public static final String GROUPING_HASH = "groupingHash";
 
     private final Configuration configuration;
-    private final MetaDataProvider metaDataProvider;
+    private final Optional<MetaDataProvider> metaDataProvider;
 
    public Converter(final Configuration configuration) {
         this.configuration = configuration;
         this.metaDataProvider = initializeMetaDataProvider();
     }
 
-    private MetaDataProvider initializeMetaDataProvider() {
-        // TODO maybe initialization should be done somewhere else
+    private Optional<MetaDataProvider> initializeMetaDataProvider() {
         if (configuration.hasMetaDataProvider()) {
 
             try {
-                final Class<?> metaDataProviderClass = Class.forName(configuration.getMetaDataProviderClassName());
-                return (MetaDataProvider) metaDataProviderClass.newInstance();
+                final Optional<String> metaDataProviderClassName = configuration.getMetaDataProviderClassName();
+                final Class<?> metaDataProviderClass = Class.forName(metaDataProviderClassName.get());
+                return Optional.of((MetaDataProvider) metaDataProviderClass.newInstance());
             } catch (final InstantiationException e) {
-                // TODO find better wrapper
-                throw new RuntimeException(e);
+                throw new IllegalStateException(e);
             } catch (final IllegalAccessException e) {
-                // TODO find better wrapper
-                throw new RuntimeException(e);
+                throw new IllegalStateException(e);
             } catch (final ClassNotFoundException e) {
-                // TODO find better wrapper
-                throw new  RuntimeException(e);
+                throw new IllegalStateException(e);
             }
         }
-        return null;
+        return Optional.absent();
     }
 
     public NotificationVO convertToNotification(final ILoggingEvent event) {
@@ -70,8 +68,8 @@ public class Converter {
     }
 
     private MetaDataVO convertToMetaData(final ILoggingEvent loggingEvent) {
-        if (metaDataProvider != null) {
-            return metaDataProvider.provide(loggingEvent);
+        if (metaDataProvider.isPresent()) {
+            return metaDataProvider.get().provide(loggingEvent);
         }
         return null;
     }
@@ -128,22 +126,11 @@ public class Converter {
             stackTrace.setMethod(stackTraceElement.getClassName() + "." + stackTraceElement.getMethodName());
             stackTrace.setLineNumber(stackTraceElement.getLineNumber());
             stackTrace.setFile(stackTraceElement.getFileName());
-            stackTrace.setInProject(isInProject(stackTraceElement.getClassName()));
+            stackTrace.setInProject(configuration.isInProject(stackTraceElement.getClassName()));
 
             stackTraces.add(stackTrace);
         }
 
         return stackTraces;
-    }
-
-    private boolean isInProject(final String className) {
-
-        for (final String packageName : configuration.getProjectPackages()) {
-            if (className.startsWith(packageName)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

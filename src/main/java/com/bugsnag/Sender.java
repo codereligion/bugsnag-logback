@@ -20,6 +20,7 @@ public class Sender {
     private Converter converter;
     private GsonProvider gsonProvider;
     private Client client;
+    private boolean started;
 
     public void start(final Configuration configuration,  final ContextAware contextAware) {
         this.configuration = configuration;
@@ -27,19 +28,23 @@ public class Sender {
         this.converter = new Converter(configuration);
         this.gsonProvider = new GsonProvider(configuration);
         this.client = createClient();
+        this.started = true;
     }
 
-    private Client createClient() {
-        final Client client = ClientBuilder.newClient();
-        final Gson gson = gsonProvider.getGson();
+    public boolean isStarted() {
+        return started;
+    }
 
-        client.register(new GsonMessageBodyReader(gson));
-        client.register(new GsonMessageBodyWriter(gson));
-
-        return client;
+    public boolean isStopped() {
+        return !isStarted();
     }
 
     public void send(final ILoggingEvent event) {
+
+        if (isStopped()) {
+            return;
+        }
+
         Response response = null;
 
         try {
@@ -62,5 +67,20 @@ public class Sender {
                 response.close();
             }
         }
+    }
+
+    public void stop() {
+        client.close();
+        this.started = false;
+    }
+
+    private Client createClient() {
+        final Client client = ClientBuilder.newClient();
+        final Gson gson = gsonProvider.getGson();
+
+        client.register(new GsonMessageBodyReader(gson));
+        client.register(new GsonMessageBodyWriter(gson));
+
+        return client;
     }
 }

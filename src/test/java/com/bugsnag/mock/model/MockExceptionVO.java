@@ -1,4 +1,7 @@
-package com.bugsnag.model;
+package com.bugsnag.mock.model;
+
+import com.bugsnag.model.ExceptionVO;
+import com.bugsnag.model.StackTraceVO;
 
 public class MockExceptionVO extends ExceptionVO {
 

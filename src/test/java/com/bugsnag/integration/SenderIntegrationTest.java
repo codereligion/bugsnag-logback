@@ -9,8 +9,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.junit.Rule;
 import org.junit.Test;
-import static com.bugsnag.logging.MockLoggingEvent.createLoggingEvent;
-import static com.bugsnag.logging.MockThrowableProxy.createThrowableProxy;
+import static com.bugsnag.mock.logging.MockLoggingEvent.createLoggingEvent;
+import static com.bugsnag.mock.logging.MockThrowableProxy.createThrowableProxy;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -56,5 +56,25 @@ public class SenderIntegrationTest {
 
         // then
         verify(5, postRequestedFor(urlEqualTo("/")));
+    }
+
+    @Test
+    public void noOpsOnSendWhenStopped() {
+        // given
+        stubFor(post(urlEqualTo("/"))
+                .withHeader("Accept", equalTo(MediaType.APPLICATION_JSON))
+                .willReturn(aResponse()
+                        .withStatus(Response.Status.BAD_REQUEST.getStatusCode())
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON)));
+
+        final Configuration configuration = new Configuration();
+        configuration.setEndpoint("localhost:8089");
+
+        final ContextAware contextAware = mock(ContextAware.class);
+        sender.start(configuration, contextAware);
+
+        // when
+        sender.stop();
+        sender.send(createLoggingEvent().with(createThrowableProxy()));
     }
 }
