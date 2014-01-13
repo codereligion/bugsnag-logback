@@ -5,8 +5,6 @@ import java.util.List;
 
 public class EventVO {
 
-    public static final String DEFAULT_RELEASE_STAGE = "production";
-
     /**
      * A unique identifier for a user affected by this event. This could be
      * any distinct identifier that makes sense for your application/platform.
@@ -32,7 +30,7 @@ public class EventVO {
      *  will be highlighted differently in bugsnag in the future, so please use
      *  "production" appropriately.
      */
-    private String releaseStage = DEFAULT_RELEASE_STAGE;
+    private String releaseStage;
 
     /**
      * A string representing what was happening in the application at the
@@ -131,7 +129,7 @@ public class EventVO {
         return exceptions;
     }
 
-    public void setExceptions(List<ExceptionVO> exceptions) {
-        this.exceptions = exceptions;
+    public void addExceptions(List<ExceptionVO> exceptions) {
+        this.exceptions.addAll(exceptions);
     }
 }

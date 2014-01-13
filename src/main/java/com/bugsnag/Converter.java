@@ -57,7 +57,7 @@ public class Converter {
     private List<EventVO> convertToEvents(final ILoggingEvent loggingEvent) {
         final EventVO event = new EventVO();
         event.setReleaseStage(configuration.getReleaseStage());
-        event.setExceptions(convertToExceptions(loggingEvent.getThrowableProxy()));
+        event.addExceptions(convertToExceptions(loggingEvent.getThrowableProxy()));
         event.setMetaData(convertToMetaData(loggingEvent));
         event.setUserId(getValueFor(loggingEvent, USER_ID));
         event.setAppVersion(getValueFor(loggingEvent, APP_VERSION));
@@ -107,7 +107,7 @@ public class Converter {
         final ExceptionVO exception = new ExceptionVO();
         exception.setErrorClass(throwableProxy.getClassName());
         exception.setMessage(throwableProxy.getMessage());
-        exception.setStacktrace(convertToStackTraces(throwableProxy));
+        exception.addStacktrace(convertToStackTraces(throwableProxy));
         exceptions.add(exception);
 
         final boolean hasCause = throwableProxy.getCause() != null;

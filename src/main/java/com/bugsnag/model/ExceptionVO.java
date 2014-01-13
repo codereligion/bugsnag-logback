@@ -47,7 +47,7 @@ public class ExceptionVO {
         return stacktrace;
     }
 
-    public void setStacktrace(List<StackTraceVO> stacktrace) {
-        this.stacktrace = stacktrace;
+    public void addStacktrace(List<StackTraceVO> stacktrace) {
+        this.stacktrace.addAll(stacktrace);
     }
 }

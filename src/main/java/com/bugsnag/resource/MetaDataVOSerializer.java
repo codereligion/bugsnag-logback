@@ -10,6 +10,6 @@ public class MetaDataVOSerializer implements JsonSerializer<MetaDataVO> {
 
     @Override
     public JsonElement serialize(final MetaDataVO src, final Type typeOfSrc, final JsonSerializationContext context) {
-        return context.serialize(src.getNameToTab());
+        return context.serialize(src.getTabsByName());
     }
 }

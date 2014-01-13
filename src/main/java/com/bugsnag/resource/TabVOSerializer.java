@@ -20,7 +20,7 @@ public class TabVOSerializer implements JsonSerializer<TabVO> {
 
     @Override
     public JsonElement serialize(final TabVO src, final Type typeOfSrc, final JsonSerializationContext context) {
-        final JsonElement jsonElement = context.serialize(src.getKeyToValue());
+        final JsonElement jsonElement = context.serialize(src.getValuesByKey());
         filterJsonElement(jsonElement);
         return jsonElement;
     }
