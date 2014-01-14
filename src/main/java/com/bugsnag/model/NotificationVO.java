@@ -27,7 +27,7 @@ public class NotificationVO {
         return apiKey;
     }
 
-    public void setApiKey(String apiKey) {
+    public void setApiKey(final String apiKey) {
         this.apiKey = apiKey;
     }
 
@@ -35,7 +35,11 @@ public class NotificationVO {
         return events;
     }
 
-    public void setEvents(List<EventVO> events) {
-        this.events = events;
+    public void addEvents(final List<EventVO> events) {
+        this.events.addAll(events);
+    }
+
+    public NotifierVO getNotifier() {
+        return notifier;
     }
 }

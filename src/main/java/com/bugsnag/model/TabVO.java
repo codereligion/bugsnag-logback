@@ -13,4 +13,28 @@ public class TabVO {
     public HashMap<String, Object> getValuesByKey() {
         return valuesByKeys;
     }
+
+    @Override
+    public int hashCode() {
+        return valuesByKeys.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TabVO tabVO = (TabVO) o;
+
+        if (!valuesByKeys.equals(tabVO.valuesByKeys)) return false;
+
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "TabVO{" +
+                "valuesByKeys=" + valuesByKeys +
+                '}';
+    }
 }

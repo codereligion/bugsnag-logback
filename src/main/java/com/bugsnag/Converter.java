@@ -50,7 +50,7 @@ public class Converter {
     public NotificationVO convertToNotification(final ILoggingEvent event) {
         final NotificationVO notification = new NotificationVO();
         notification.setApiKey(configuration.getApiKey());
-        notification.setEvents(convertToEvents(event));
+        notification.addEvents(convertToEvents(event));
         return notification;
     }
 
