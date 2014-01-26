@@ -1,6 +1,7 @@
 # Bugsnag-Logback [![Build Status](https://ssl.webpack.de/secure-jenkins.codereligion.com/buildStatus/icon?job=bugsnag-logback-master-build-flow)](http://jenkins.codereligion.com/view/bugsnag-logback/job/bugsnag-logback-master-build-flow/)
 
-A logback appender which pushes any exception containing event to bugsnag.
+Allows to diff any two Java objects and retrieve the diff result as a list of strings.
+The result is a [unified diff](http://en.wikipedia.org/wiki/Diff#Unified_format) without any contextual lines.
 
 ## Requirements
 * Java 1.5 or higher
@@ -11,7 +12,7 @@ A logback appender which pushes any exception containing event to bugsnag.
 <dependency>
 	<groupId>com.codereligion</groupId>
 	<artifactId>bugsnag-logback</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>${project.version}</version>
 </dependency>
 ```
 
@@ -49,21 +50,7 @@ A logback appender which pushes any exception containing event to bugsnag.
 
 ## Example meta data provider
 ```java
-package com.codereligion.bugsnag.logback;
-
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import com.codereligion.bugsnag.logback.model.MetaDataVO;
-
-public class ExampleMetaDataProvider implements MetaDataProvider {
-
-    @Override
-    public MetaDataVO provide(ILoggingEvent loggingEvent) {
-        return new MetaDataVO()
-                .addToTab("Logging Details", "message", loggingEvent.getFormattedMessage())
-                .addToTab("Logging Details", "level", loggingEvent.getLevel());
-    }
-}
-
+${exampleMetaDataProvider}
 ```
 
 For more details have a look at the [wiki](https://github.com/sierragolf/bugsnag-logback/wiki).
