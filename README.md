@@ -1,9 +1,10 @@
 # Bugsnag-Logback [![Build Status](https://ssl.webpack.de/secure-jenkins.codereligion.com/buildStatus/icon?job=bugsnag-logback-master-build-flow)](http://jenkins.codereligion.com/view/bugsnag-logback/job/bugsnag-logback-master-build-flow/)
 
-A logback appender which pushes any exception containing event to bugsnag.
+A logback appender which pushes any event containing an exception to bugsnag.
 
 ## Requirements
 * Java 1.5 or higher
+* logback
 * dependencies see [maven pom](pom.xml)
 
 ## Maven ##
@@ -65,5 +66,3 @@ public class ExampleMetaDataProvider implements MetaDataProvider {
 }
 
 ```
-
-For more details have a look at the [wiki](https://github.com/sierragolf/bugsnag-logback/wiki).

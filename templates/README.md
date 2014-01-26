@@ -1,10 +1,10 @@
 # Bugsnag-Logback [![Build Status](https://ssl.webpack.de/secure-jenkins.codereligion.com/buildStatus/icon?job=bugsnag-logback-master-build-flow)](http://jenkins.codereligion.com/view/bugsnag-logback/job/bugsnag-logback-master-build-flow/)
 
-Allows to diff any two Java objects and retrieve the diff result as a list of strings.
-The result is a [unified diff](http://en.wikipedia.org/wiki/Diff#Unified_format) without any contextual lines.
+A logback appender which pushes any event containing an exception to bugsnag.
 
 ## Requirements
 * Java 1.5 or higher
+* logback
 * dependencies see [maven pom](pom.xml)
 
 ## Maven ##
@@ -52,5 +52,3 @@ The result is a [unified diff](http://en.wikipedia.org/wiki/Diff#Unified_format)
 ```java
 ${exampleMetaDataProvider}
 ```
-
-For more details have a look at the [wiki](https://github.com/sierragolf/bugsnag-logback/wiki).
