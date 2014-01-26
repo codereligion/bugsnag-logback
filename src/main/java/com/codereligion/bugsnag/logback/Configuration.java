@@ -26,6 +26,8 @@ public class Configuration {
     private static final boolean DEFAULT_USE_SSL = false;
     private static final String DEFAULT_RELEASE_STAGE = "production";
     private static final String PROTOCOL_HOST_SEPARATOR = "://";
+    private static final String HTTPS = "https";
+    private static final String HTTP = "http";
 
     private String endpoint = DEFAULT_ENDPOINT;
     private String apiKey;
@@ -45,9 +47,9 @@ public class Configuration {
 
         final String protocol;
         if (sslEnabled) {
-            protocol = "https";
+            protocol = HTTPS;
         } else {
-            protocol = "http";
+            protocol = HTTP;
         }
 
         return protocol + PROTOCOL_HOST_SEPARATOR + endpoint;
