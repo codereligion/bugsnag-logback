@@ -18,17 +18,17 @@ package com.codereligion.bugsnag.logback.resource;
 import com.codereligion.bugsnag.logback.Configuration;
 import com.codereligion.bugsnag.logback.model.MetaDataVO;
 import com.codereligion.bugsnag.logback.model.TabVO;
-import com.codereligion.bugsnag.logback.Configuration;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 public class GsonProvider {
+
     private final Gson gson;
 
-    public GsonProvider(final Configuration configuration) {
+    public GsonProvider(final GsonFilterProvider gsonFilterProvider) {
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(MetaDataVO.class, new MetaDataVOSerializer())
-                .registerTypeAdapter(TabVO.class, new TabVOSerializer(configuration))
+                .registerTypeAdapter(TabVO.class, new TabVOSerializer(gsonFilterProvider))
                 .create();
     }
 

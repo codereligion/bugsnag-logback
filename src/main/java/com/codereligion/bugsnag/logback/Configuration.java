@@ -16,12 +16,13 @@
 package com.codereligion.bugsnag.logback;
 
 import ch.qos.logback.core.spi.ContextAware;
+import com.codereligion.bugsnag.logback.resource.GsonFilterProvider;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import java.util.Set;
 
-public class Configuration {
+public class Configuration implements GsonFilterProvider {
     private static final String DEFAULT_ENDPOINT = "notify.bugsnag.com";
     private static final boolean DEFAULT_USE_SSL = false;
     private static final String DEFAULT_RELEASE_STAGE = "production";

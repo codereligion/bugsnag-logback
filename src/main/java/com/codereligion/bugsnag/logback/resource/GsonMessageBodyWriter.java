@@ -38,37 +38,37 @@ public class GsonMessageBodyWriter implements MessageBodyWriter<Object> {
         this.gson = gson;
     }
 
-	@Override
-	public boolean isWriteable(final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType) {
-		return true;
-	}
+    @Override
+    public boolean isWriteable(final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType) {
+        return true;
+    }
 
-	@Override
-	public long getSize(final Object object, final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType) {
-		return -1;
-	}
+    @Override
+    public long getSize(final Object object, final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType) {
+        return -1;
+    }
 
-	@Override
-	public void writeTo(final Object object, final Class<?> type, final Type genericType, final Annotation[] annotations,
-			final MediaType mediaType, final MultivaluedMap<String, Object> httpHeaders,
-			final OutputStream entityStream) throws IOException {
+    @Override
+    public void writeTo(final Object object, final Class<?> type, final Type genericType, final Annotation[] annotations,
+                        final MediaType mediaType, final MultivaluedMap<String, Object> httpHeaders,
+                        final OutputStream entityStream) throws IOException {
 
-		final OutputStreamWriter writer = new OutputStreamWriter(entityStream, Charsets.UTF_8);
+        final OutputStreamWriter writer = new OutputStreamWriter(entityStream, Charsets.UTF_8);
 
-		try {
-			final Type jsonType;
-			if (type.equals(genericType)) {
-				jsonType = type;
-			} else {
-				if (genericType == null) {
-					jsonType = type.getGenericSuperclass();
-				} else {
-					jsonType = genericType;
-				}
-			}
+        try {
+            final Type jsonType;
+            if (type.equals(genericType)) {
+                jsonType = type;
+            } else {
+                if (genericType == null) {
+                    jsonType = type.getGenericSuperclass();
+                } else {
+                    jsonType = genericType;
+                }
+            }
             gson.toJson(object, jsonType, writer);
-		} finally {
-			writer.close();
-		}
-	}
+        } finally {
+            writer.close();
+        }
+    }
 }

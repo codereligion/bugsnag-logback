@@ -16,16 +16,17 @@
 package com.codereligion.bugsnag.logback.model;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class TabVO {
-    private final HashMap<String, Object> valuesByKeys = new HashMap<String, Object>();
+    private final Map<String, Object> valuesByKeys = new HashMap<String, Object>();
 
     public TabVO add(final String key, final Object value) {
         valuesByKeys.put(key, value);
         return this;
     }
 
-    public HashMap<String, Object> getValuesByKey() {
+    public Map<String, Object> getValuesByKey() {
         return valuesByKeys;
     }
 
@@ -36,20 +37,24 @@ public class TabVO {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         TabVO tabVO = (TabVO) o;
 
-        if (!valuesByKeys.equals(tabVO.valuesByKeys)) return false;
+        if (!valuesByKeys.equals(tabVO.valuesByKeys)) {
+            return false;
+        }
 
         return true;
     }
 
     @Override
     public String toString() {
-        return "TabVO{" +
-                "valuesByKeys=" + valuesByKeys +
-                '}';
+        return "TabVO{valuesByKeys=" + valuesByKeys + '}';
     }
 }

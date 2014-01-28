@@ -22,8 +22,6 @@ import com.codereligion.bugsnag.logback.resource.GsonMessageBodyReader;
 import com.codereligion.bugsnag.logback.resource.GsonMessageBodyWriter;
 import com.codereligion.bugsnag.logback.resource.GsonProvider;
 import com.codereligion.bugsnag.logback.resource.NotifierResource;
-import com.codereligion.bugsnag.logback.resource.GsonProvider;
-import com.codereligion.bugsnag.logback.resource.NotifierResource;
 import com.google.gson.Gson;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -31,6 +29,14 @@ import javax.ws.rs.core.Response;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
 public class Sender {
+
+    private static final class StatusCode {
+        private static final int OK = 200;
+        private static final int BAD_REQUEST = 400;
+        private static final int UNAUTHORIZED = 401;
+        private static final int REQUEST_ENTITY_TO_LARGE = 413;
+        private static final int TO_MANY_REQUESTS = 429;
+    }
 
     private Configuration configuration;
     private ContextAware contextAware;
@@ -70,20 +76,30 @@ public class Sender {
             final NotificationVO notification = converter.convertToNotification(event);
             response = notifierResource.sendNotification(notification);
             final Response.StatusType statusInfo = response.getStatusInfo();
+            final int statusCode = statusInfo.getStatusCode();
 
-            switch(statusInfo.getStatusCode()) {
-                case 200: contextAware.addInfo("Successfully delivered notification to bugsnag."); break;
-                case 400: // FALL THROUGH
-                case 401: // FALL THROUGH
-                case 413: // FALL THROUGH
-                case 429: contextAware.addError("Error: " + statusInfo); break;
-                default: contextAware.addError("Unexpected response code:" + statusInfo);
+            final boolean isOk = StatusCode.OK == statusCode;
+
+            if (isOk) {
+                contextAware.addInfo("Successfully delivered notification to bugsnag.");
+            } else if (isExpectedErrorCode(statusCode)) {
+                contextAware.addError("Error: " + statusInfo);
+            } else {
+                contextAware.addError("Unexpected status code:" + statusInfo);
             }
+
         } finally {
             if (response != null) {
                 response.close();
             }
         }
+    }
+
+    private boolean isExpectedErrorCode(final int statusCode) {
+        return statusCode == StatusCode.BAD_REQUEST ||
+                statusCode == StatusCode.UNAUTHORIZED ||
+                statusCode == StatusCode.REQUEST_ENTITY_TO_LARGE ||
+                statusCode == StatusCode.TO_MANY_REQUESTS;
     }
 
     public void stop() {
@@ -92,12 +108,11 @@ public class Sender {
     }
 
     private Client createClient() {
-        final Client client = ClientBuilder.newClient();
         final Gson gson = gsonProvider.getGson();
 
-        client.register(new GsonMessageBodyReader(gson));
-        client.register(new GsonMessageBodyWriter(gson));
-
-        return client;
+        return ClientBuilder
+                .newClient()
+                .register(new GsonMessageBodyReader(gson))
+                .register(new GsonMessageBodyWriter(gson));
     }
 }

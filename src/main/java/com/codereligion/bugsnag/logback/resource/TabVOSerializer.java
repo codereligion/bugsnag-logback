@@ -15,9 +15,7 @@
  */
 package com.codereligion.bugsnag.logback.resource;
 
-import com.codereligion.bugsnag.logback.Configuration;
 import com.codereligion.bugsnag.logback.model.TabVO;
-import com.codereligion.bugsnag.logback.Configuration;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -28,10 +26,10 @@ import java.util.Map;
 
 public class TabVOSerializer implements JsonSerializer<TabVO> {
 
-    private final Configuration configuration;
+    private final GsonFilterProvider gsonFilterProvider;
 
-    public TabVOSerializer(final Configuration configuration) {
-        this.configuration = configuration;
+    public TabVOSerializer(final GsonFilterProvider gsonFilterProvider) {
+        this.gsonFilterProvider = gsonFilterProvider;
     }
 
     @Override
@@ -58,7 +56,7 @@ public class TabVOSerializer implements JsonSerializer<TabVO> {
     private void filterJsonObject(final JsonObject jsonObject) {
         for (final Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
             final String key = entry.getKey();
-            if (configuration.isIgnoredByFilter(key)) {
+            if (gsonFilterProvider.isIgnoredByFilter(key)) {
                 jsonObject.remove(key);
             } else {
                 filterJsonElement(entry.getValue());
