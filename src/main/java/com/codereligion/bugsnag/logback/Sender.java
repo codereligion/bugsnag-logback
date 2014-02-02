@@ -29,12 +29,12 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
 public class Sender {
 
-    private static final class StatusCode {
-        private static final int OK = 200;
-        private static final int BAD_REQUEST = 400;
-        private static final int UNAUTHORIZED = 401;
-        private static final int REQUEST_ENTITY_TO_LARGE = 413;
-        private static final int TO_MANY_REQUESTS = 429;
+    public static final class StatusCode {
+        public static final int OK = 200;
+        public static final int BAD_REQUEST = 400;
+        public static final int UNAUTHORIZED = 401;
+        public static final int REQUEST_ENTITY_TOO_LARGE = 413;
+        public static final int TOO_MANY_REQUESTS = 429;
     }
 
     private Configuration configuration;
@@ -71,17 +71,16 @@ public class Sender {
             final ResteasyWebTarget resteasyWebTarget = (ResteasyWebTarget) client.target(configuration.getEndpointWithProtocol());
             final NotifierResource notifierResource= resteasyWebTarget.proxy(NotifierResource.class);
             response = notifierResource.sendNotification(notification);
-            final Response.StatusType statusInfo = response.getStatusInfo();
-            final int statusCode = statusInfo.getStatusCode();
+            final int statusCode = response.getStatus();
 
             final boolean isOk = StatusCode.OK == statusCode;
 
             if (isOk) {
                 contextAware.addInfo("Successfully delivered notification to bugsnag.");
             } else if (isExpectedErrorCode(statusCode)) {
-                contextAware.addError("Error: " + statusInfo);
+                contextAware.addError("Could not deliver notification to bugsnag, got http status code: " + statusCode);
             } else {
-                contextAware.addError("Unexpected status code:" + statusInfo);
+                contextAware.addError("Unexpected http status code: " + statusCode);
             }
 
         } finally {
@@ -94,8 +93,8 @@ public class Sender {
     private boolean isExpectedErrorCode(final int statusCode) {
         return statusCode == StatusCode.BAD_REQUEST ||
                 statusCode == StatusCode.UNAUTHORIZED ||
-                statusCode == StatusCode.REQUEST_ENTITY_TO_LARGE ||
-                statusCode == StatusCode.TO_MANY_REQUESTS;
+                statusCode == StatusCode.REQUEST_ENTITY_TOO_LARGE ||
+                statusCode == StatusCode.TOO_MANY_REQUESTS;
     }
 
     public void stop() {

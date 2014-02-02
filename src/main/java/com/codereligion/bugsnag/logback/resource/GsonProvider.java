@@ -20,7 +20,7 @@ import com.codereligion.bugsnag.logback.model.TabVO;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class    GsonProvider {
+public class GsonProvider {
 
     private final Gson gson;
 

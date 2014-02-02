@@ -16,14 +16,11 @@
 package com.codereligion.bugsnag.logback;
 
 import ch.qos.logback.core.spi.ContextAware;
-import com.codereligion.bugsnag.logback.Configuration;
-import com.codereligion.bugsnag.logback.Sender;
 import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-// TODO test different response behaviours
 public class SenderTest {
 
     private Sender sender = new Sender();
@@ -35,7 +32,7 @@ public class SenderTest {
     }
 
     @Test
-    public void isStoppedAfterStart() {
+    public void isStoppedAfterStop() {
         sender.start(mock(Configuration.class), mock(ContextAware.class));
         sender.stop();
         assertThat(sender.isStopped(), is(true));

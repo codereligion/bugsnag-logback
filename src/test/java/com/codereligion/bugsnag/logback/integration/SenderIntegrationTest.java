@@ -22,8 +22,10 @@ import com.codereligion.bugsnag.logback.model.NotificationVO;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mockito;
 import static com.codereligion.bugsnag.logback.mock.model.MockNotificationVO.createNotificationVO;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -37,9 +39,17 @@ import static org.mockito.Mockito.mock;
 public class SenderIntegrationTest {
 
     @Rule
-    public WireMockRule wireMockRule = new WireMockRule(IntegrationTestConfiguration.PORT);
+    public final WireMockRule wireMockRule = new WireMockRule(IntegrationTestConfiguration.PORT);
 
-    private Sender sender = new Sender();
+    private final Configuration configuration = new Configuration();
+    private final ContextAware contextAware = mock(ContextAware.class);
+    private final Sender sender = new Sender();
+
+    @Before
+    public void beforeEachTest() {
+        configuration.setEndpoint(IntegrationTestConfiguration.ENDPOINT);
+        sender.start(configuration, contextAware);
+    }
 
     /**
      * Tests roughly that connections are closed correctly.
@@ -51,14 +61,8 @@ public class SenderIntegrationTest {
         stubFor(post(urlEqualTo("/"))
                 .withHeader("Accept", equalTo(MediaType.APPLICATION_JSON))
                 .willReturn(aResponse()
-                        .withStatus(Response.Status.BAD_REQUEST.getStatusCode())
+                        .withStatus(Response.Status.OK.getStatusCode())
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON)));
-
-        final Configuration configuration = new Configuration();
-        configuration.setEndpoint(IntegrationTestConfiguration.ENDPOINT);
-
-        final ContextAware contextAware = mock(ContextAware.class);
-        sender.start(configuration, contextAware);
 
         // when
         final NotificationVO notification = createNotificationVO();
@@ -78,17 +82,82 @@ public class SenderIntegrationTest {
         stubFor(post(urlEqualTo("/"))
                 .withHeader("Accept", equalTo(MediaType.APPLICATION_JSON))
                 .willReturn(aResponse()
-                        .withStatus(Response.Status.BAD_REQUEST.getStatusCode())
+                        .withStatus(Response.Status.OK.getStatusCode())
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON)));
-
-        final Configuration configuration = new Configuration();
-        configuration.setEndpoint(IntegrationTestConfiguration.ENDPOINT);
-
-        final ContextAware contextAware = mock(ContextAware.class);
-        sender.start(configuration, contextAware);
 
         // when
         sender.stop();
         sender.send(createNotificationVO());
+        verify(0, postRequestedFor(urlEqualTo("/")));
+    }
+
+    @Test
+    public void addsErrorOnBadRequest() {
+
+        stubFor(post(urlEqualTo("/"))
+                .withHeader("Accept", equalTo(MediaType.APPLICATION_JSON))
+                .willReturn(aResponse()
+                        .withStatus(Sender.StatusCode.BAD_REQUEST)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON)));
+
+        sender.send(createNotificationVO());
+
+        Mockito.verify(contextAware).addError("Could not deliver notification to bugsnag, got http status code: 400");
+    }
+
+    @Test
+    public void addsErrorOnUnauthorizedRequest() {
+
+        stubFor(post(urlEqualTo("/"))
+                .withHeader("Accept", equalTo(MediaType.APPLICATION_JSON))
+                .willReturn(aResponse()
+                        .withStatus(Sender.StatusCode.UNAUTHORIZED)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON)));
+
+        sender.send(createNotificationVO());
+
+        Mockito.verify(contextAware).addError("Could not deliver notification to bugsnag, got http status code: 401");
+    }
+
+    @Test
+    public void addsErrorOnTooLargeRequestEntity() {
+
+        stubFor(post(urlEqualTo("/"))
+                .withHeader("Accept", equalTo(MediaType.APPLICATION_JSON))
+                .willReturn(aResponse()
+                        .withStatus(Sender.StatusCode.REQUEST_ENTITY_TOO_LARGE)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON)));
+
+        sender.send(createNotificationVO());
+
+        Mockito.verify(contextAware).addError("Could not deliver notification to bugsnag, got http status code: 413");
+    }
+
+    @Test
+    public void addsErrorOnTooManyRequests() {
+
+        stubFor(post(urlEqualTo("/"))
+                .withHeader("Accept", equalTo(MediaType.APPLICATION_JSON))
+                .willReturn(aResponse()
+                        .withStatus(Sender.StatusCode.TOO_MANY_REQUESTS)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON)));
+
+        sender.send(createNotificationVO());
+
+        Mockito.verify(contextAware).addError("Could not deliver notification to bugsnag, got http status code: 429");
+    }
+
+    @Test
+    public void addsErrorOnUnknownStatusCode() {
+
+        stubFor(post(urlEqualTo("/"))
+                .withHeader("Accept", equalTo(MediaType.APPLICATION_JSON))
+                .willReturn(aResponse()
+                        .withStatus(420)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON)));
+
+        sender.send(createNotificationVO());
+
+        Mockito.verify(contextAware).addError("Unexpected http status code: 420");
     }
 }

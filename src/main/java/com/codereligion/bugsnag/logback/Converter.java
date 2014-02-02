@@ -73,11 +73,7 @@ public class Converter {
     private Optional<MetaDataProvider> getMetaDataProvider() {
 
         if (metaDataProvider == null) {
-            synchronized (this) {
-                if (metaDataProvider == null) {
-                    metaDataProvider = initializeMetaDataProvider();
-                }
-            }
+            metaDataProvider = initializeMetaDataProvider();
         }
 
         return metaDataProvider;
