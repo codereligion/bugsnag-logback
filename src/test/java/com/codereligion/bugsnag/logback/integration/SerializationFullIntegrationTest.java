@@ -26,7 +26,6 @@ import com.codereligion.bugsnag.logback.mock.model.MockExceptionVO;
 import com.codereligion.bugsnag.logback.mock.model.MockMetaDataVO;
 import com.codereligion.bugsnag.logback.mock.model.MockNotificationVO;
 import com.codereligion.bugsnag.logback.resource.GsonProvider;
-import com.codereligion.bugsnag.logback.mock.model.MockNotificationVO;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.gson.Gson;
 import javax.ws.rs.core.MediaType;
@@ -35,12 +34,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import static com.codereligion.bugsnag.logback.mock.logging.MockLoggingEvent.createLoggingEvent;
-import static com.codereligion.bugsnag.logback.mock.logging.MockStackTraceElement.createStackTraceElement;
-import static com.codereligion.bugsnag.logback.mock.logging.MockThrowableProxy.createThrowableProxy;
 import static com.codereligion.bugsnag.logback.mock.model.MockEventVO.createEventVO;
-import static com.codereligion.bugsnag.logback.mock.model.MockExceptionVO.createExceptionVO;
-import static com.codereligion.bugsnag.logback.mock.model.MockMetaDataVO.createMetaDataVO;
-import static com.codereligion.bugsnag.logback.mock.model.MockNotificationVO.createNotificationVO;
 import static com.codereligion.bugsnag.logback.mock.model.MockStackTraceVO.createStackTraceVO;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -50,14 +44,13 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 
 public class SerializationFullIntegrationTest {
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(8089);
 
-    private Appender appender = spy(new Appender());
+    private Appender appender = new Appender();
 
     private final Gson gson = new GsonProvider(new Configuration()).getGson();
 

@@ -15,15 +15,8 @@
  */
 package com.codereligion.bugsnag.logback;
 
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import com.codereligion.bugsnag.logback.mock.logging.MockLoggingEvent;
-import com.codereligion.bugsnag.logback.Appender;
-import com.codereligion.bugsnag.logback.mock.logging.MockThrowableProxy;
-import com.codereligion.bugsnag.logback.resource.NotifierResource;
-import javax.ws.rs.client.Client;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.junit.Before;
-import org.junit.Ignore;
+import com.codereligion.bugsnag.logback.model.NotificationVO;
+import com.google.common.collect.Sets;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -31,121 +24,183 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import static com.codereligion.bugsnag.logback.mock.logging.MockLoggingEvent.createLoggingEvent;
 import static com.codereligion.bugsnag.logback.mock.logging.MockThrowableProxy.createThrowableProxy;
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-@Ignore("wip")
 public class AppenderTest {
 
-    // TODO test that start sets start flag
-    // TODO all configuration values are passed on
-    // TODO test that configuration is passed to sender
-    // TODO test that append does not appender if not started
-    // TODO test that only exceptions are send
-    // TODO test that excluded exceptions are not send
-    // TODO test that nothing is send when stage is ignored
-    // TODO test that sender lifecycle is maintained correctly
+    @Mock
+    private Configuration configuration;
 
     @Mock
-    private Client client;
+    private Sender sender;
 
     @InjectMocks
     private Appender appender;
 
-    private NotifierResource notifierResource;
+    @Test
+    public void doesNotStartWhenConfigurationIsInvalid() {
 
-    @Before
-    public void beforeEachTest() {
+        when(configuration.isInvalid()).thenReturn(Boolean.TRUE);
 
-        final ResteasyWebTarget resteasyWebTarget = mock(ResteasyWebTarget.class);
-        notifierResource = mock(NotifierResource.class);
+        appender.start();
 
-        when(resteasyWebTarget.proxy(NotifierResource.class)).thenReturn(notifierResource);
-        when(client.target(anyString())).thenReturn(resteasyWebTarget);
+        assertThat(appender.isStarted(), is(Boolean.FALSE));
+    }
 
+    @Test
+    public void addsErrorsWhenConfigurationIsInvalid() {
+
+        when(configuration.isInvalid()).thenReturn(Boolean.TRUE);
+
+        appender.start();
+
+        verify(configuration).addErrors(appender);
+    }
+
+    @Test
+    public void startsWhenConfigurationIsValid() {
+
+        when(configuration.isInvalid()).thenReturn(Boolean.FALSE);
+
+        appender.start();
+
+        assertThat(appender.isStarted(), is(Boolean.TRUE));
+    }
+
+    @Test
+    public void startsSenderOnAppenderStart() {
+
+        when(configuration.isInvalid()).thenReturn(Boolean.FALSE);
+
+        appender.start();
+
+        verify(sender).start(configuration, appender);
+    }
+
+    @Test
+    public void doesNotStopWhenNotStarted() {
+        appender.stop();
+        verifyZeroInteractions(sender);
+    }
+
+    @Test
+    public void stopsSenderOnAppenderStop() {
+
+        // given
+        when(configuration.isInvalid()).thenReturn(Boolean.FALSE);
+
+        // when
+        appender.start();
+        appender.stop();
+
+        // then
+        verify(sender).stop();
+        assertThat(appender.isStarted(), is(Boolean.FALSE));
+    }
+
+    @Test
+    public void doesNotAppendWhenNotStarted() {
+
+        appender.append(createLoggingEvent().with(createThrowableProxy()));
+
+        verifyZeroInteractions(sender);
+    }
+
+    @Test
+    public void doesNotAppendWhenStageIsIgnored() {
+
+        // given
+        when(configuration.isStageIgnored()).thenReturn(Boolean.TRUE);
+
+        // when
+        appender.start();
+        appender.append(createLoggingEvent().with(createThrowableProxy()));
+
+        // then
+        verify(sender, never()).send(any(NotificationVO.class));
+    }
+
+    @Test
+    public void doesNotAppendWhenEventDoesNotContainAnException() {
+        appender.start();
+        appender.append(createLoggingEvent());
+
+        verify(sender, never()).send(any(NotificationVO.class));
+    }
+
+    @Test
+    public void doesNotAppendWhenExceptionIsIgnored() {
+
+        // given
+        when(configuration.shouldNotifyFor(anyString())).thenReturn(Boolean.FALSE);
+
+        // when
+        appender.start();
+        appender.append(createLoggingEvent().with(createThrowableProxy()));
+
+        // then
+        verify(sender, never()).send(any(NotificationVO.class));
+    }
+
+    @Test
+    public void delegatesSslEnabledToConfiguration() {
+        appender.setSslEnabled(true);
+        verify(configuration).setSslEnabled(true);
+    }
+
+    @Test
+    public void delegatesEndpointToConfiguration() {
+        appender.setEndpoint("some endpoint");
+        verify(configuration).setEndpoint("some endpoint");
+    }
+
+    @Test
+    public void delegatesApiKeyToConfiguration() {
         appender.setApiKey("some api key");
+        verify(configuration).setApiKey("some api key");
     }
 
     @Test
-    public void doesNotAppendWhenReleaseStageIsIgnored() {
-        // given
-        final ILoggingEvent loggingEvent = createLoggingEvent()
-                .with(MockThrowableProxy.createThrowableProxy());
-
-        appender.setNotifyReleaseStages("staging,production");
+    public void delegatesReleaseStageToConfiguration() {
         appender.setReleaseStage("test");
-
-        // when
-        appender.start();
-        appender.append(loggingEvent);
-
-        // then
-        verifyZeroInteractions(notifierResource);
+        verify(configuration).setReleaseStage("test");
     }
 
     @Test
-    public void doesNotAppendWhenExceptionClassIsIgnored() {
-        // given
-        final ILoggingEvent loggingEvent = createLoggingEvent()
-                .with(
-                        MockThrowableProxy.createThrowableProxy().withClassName("some.foo.Bar"));
-
-        appender.setIgnoreClasses("some.foo.Bar");
-
-        // when
-        appender.start();
-        appender.append(loggingEvent);
-
-        // then
-        verifyZeroInteractions(notifierResource);
-    }
-
-
-    @Test
-    public void logsInfoStatusOnSuccessfulRequest() {
-        // given
-        // mock client
-
-        // when
-        appender.start();
-        final MockLoggingEvent loggingEvent = createLoggingEvent().with(MockThrowableProxy.createThrowableProxy());
-        appender.doAppend(loggingEvent);
-
-        // then
+    public void delegatesNotifyReleaseStagesToConfiguration() {
+        appender.setNotifyReleaseStages("test,live");
+        verify(configuration).setNotifyReleaseStages(Sets.newHashSet("test", "live"));
     }
 
     @Test
-    public void logsErrorStatusOnBadRequest() {
-        // given
-
-        // when
-        appender.start();
-        final MockLoggingEvent loggingEvent = createLoggingEvent().with(MockThrowableProxy.createThrowableProxy());
-        appender.doAppend(loggingEvent);
-
-        // then
-        verify(1, postRequestedFor(urlEqualTo("/")));
+    public void delegatesFiltersToConfiguration() {
+        appender.setFilters("pw,password");
+        verify(configuration).setFilters(Sets.newHashSet("pw", "password"));
     }
 
     @Test
-    public void logsErrorStatusOnUnauthorizedRequest() {
-        // TODO
+    public void delegatesProjectPackagesToConfiguration() {
+        appender.setProjectPackages("com.foo,com.bar");
+        verify(configuration).setProjectPackages(Sets.newHashSet("com.foo", "com.bar"));
     }
 
     @Test
-    public void logsErrorStatusOnTooLargeRequest() {
-        // TODO
+    public void delegatesIgnoredClassToConfiguration() {
+        appender.setIgnoreClasses("com.foo.Bar,com.rofl.Olikoski");
+        verify(configuration).setIgnoreClasses(Sets.newHashSet("com.foo.Bar", "com.rofl.Olikoski"));
     }
 
-
     @Test
-    public void logsErrorStatusOnTooManyRequests() {
-        // TODO
+    public void delegatesMetaDataProviderToConfiguration() {
+        appender.setMetaDataProvider("com.foo.MetaDataProvider");
+        verify(configuration).setMetaDataProviderClassName("com.foo.MetaDataProvider");
     }
 }

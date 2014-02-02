@@ -17,6 +17,7 @@ package com.codereligion.bugsnag.logback;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
+import com.codereligion.bugsnag.logback.model.NotificationVO;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
 import java.util.Set;
@@ -24,6 +25,7 @@ import java.util.Set;
 public class Appender extends AppenderBase<ILoggingEvent> {
 
     private final Configuration configuration;
+    private final Converter converter;
     private final Sender sender;
 
     public Appender() {
@@ -32,6 +34,7 @@ public class Appender extends AppenderBase<ILoggingEvent> {
 
     Appender(final Configuration configuration, final Sender sender) {
         this.configuration = configuration;
+        this.converter = new Converter(configuration);
         this.sender = sender;
     }
 
@@ -39,6 +42,7 @@ public class Appender extends AppenderBase<ILoggingEvent> {
     public void start() {
         if (configuration.isInvalid()) {
             configuration.addErrors(this);
+            return;
         }
 
         sender.start(configuration, this);
@@ -47,6 +51,11 @@ public class Appender extends AppenderBase<ILoggingEvent> {
 
     @Override
     public void stop() {
+
+        if (!isStarted()) {
+            return;
+        }
+
         sender.stop();
         super.stop();
     }
@@ -59,7 +68,8 @@ public class Appender extends AppenderBase<ILoggingEvent> {
         }
 
         if (containsException(event) && shouldNotifyFor(event)) {
-            sender.send(event);
+            final NotificationVO notification = converter.convertToNotification(event);
+            sender.send(notification);
         }
     }
 

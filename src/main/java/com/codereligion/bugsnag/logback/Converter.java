@@ -23,7 +23,6 @@ import com.codereligion.bugsnag.logback.model.ExceptionVO;
 import com.codereligion.bugsnag.logback.model.MetaDataVO;
 import com.codereligion.bugsnag.logback.model.NotificationVO;
 import com.codereligion.bugsnag.logback.model.StackTraceVO;
-import com.codereligion.bugsnag.logback.model.ExceptionVO;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import java.util.Collections;
@@ -38,29 +37,10 @@ public class Converter {
     public static final String GROUPING_HASH = "groupingHash";
 
     private final Configuration configuration;
-    private final Optional<MetaDataProvider> metaDataProvider;
+    private Optional<MetaDataProvider> metaDataProvider;
 
-   public Converter(final Configuration configuration) {
+    public Converter(final Configuration configuration) {
         this.configuration = configuration;
-        this.metaDataProvider = initializeMetaDataProvider();
-    }
-
-    private Optional<MetaDataProvider> initializeMetaDataProvider() {
-        if (configuration.hasMetaDataProvider()) {
-
-            try {
-                final Optional<String> metaDataProviderClassName = configuration.getMetaDataProviderClassName();
-                final Class<?> metaDataProviderClass = Class.forName(metaDataProviderClassName.get());
-                return Optional.of((MetaDataProvider) metaDataProviderClass.newInstance());
-            } catch (final InstantiationException e) {
-                throw new IllegalStateException(e);
-            } catch (final IllegalAccessException e) {
-                throw new IllegalStateException(e);
-            } catch (final ClassNotFoundException e) {
-                throw new IllegalStateException(e);
-            }
-        }
-        return Optional.absent();
     }
 
     public NotificationVO convertToNotification(final ILoggingEvent event) {
@@ -84,10 +64,41 @@ public class Converter {
     }
 
     private MetaDataVO convertToMetaData(final ILoggingEvent loggingEvent) {
-        if (metaDataProvider.isPresent()) {
-            return metaDataProvider.get().provide(loggingEvent);
+        if (getMetaDataProvider().isPresent()) {
+            return getMetaDataProvider().get().provide(loggingEvent);
         }
         return null;
+    }
+
+    private Optional<MetaDataProvider> getMetaDataProvider() {
+
+        if (metaDataProvider == null) {
+            synchronized (this) {
+                if (metaDataProvider == null) {
+                    metaDataProvider = initializeMetaDataProvider();
+                }
+            }
+        }
+
+        return metaDataProvider;
+    }
+
+    private Optional<MetaDataProvider> initializeMetaDataProvider() {
+        if (configuration.hasMetaDataProvider()) {
+
+            try {
+                final Optional<String> metaDataProviderClassName = configuration.getMetaDataProviderClassName();
+                final Class<?> metaDataProviderClass = Class.forName(metaDataProviderClassName.get());
+                return Optional.of((MetaDataProvider) metaDataProviderClass.newInstance());
+            } catch (final InstantiationException e) {
+                throw new IllegalStateException(e);
+            } catch (final IllegalAccessException e) {
+                throw new IllegalStateException(e);
+            } catch (final ClassNotFoundException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        return Optional.absent();
     }
 
     private String getValueFor(final ILoggingEvent loggingEvent, final String key) {

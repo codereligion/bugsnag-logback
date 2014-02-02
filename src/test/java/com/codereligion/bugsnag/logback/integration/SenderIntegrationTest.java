@@ -15,17 +15,16 @@
  */
 package com.codereligion.bugsnag.logback.integration;
 
-import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.spi.ContextAware;
 import com.codereligion.bugsnag.logback.Configuration;
 import com.codereligion.bugsnag.logback.Sender;
-import com.codereligion.bugsnag.logback.mock.logging.MockThrowableProxy;
+import com.codereligion.bugsnag.logback.model.NotificationVO;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.junit.Rule;
 import org.junit.Test;
-import static com.codereligion.bugsnag.logback.mock.logging.MockLoggingEvent.createLoggingEvent;
+import static com.codereligion.bugsnag.logback.mock.model.MockNotificationVO.createNotificationVO;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -62,12 +61,12 @@ public class SenderIntegrationTest {
         sender.start(configuration, contextAware);
 
         // when
-        final ILoggingEvent loggingEvent = createLoggingEvent().with(MockThrowableProxy.createThrowableProxy());
-        sender.send(loggingEvent);
-        sender.send(loggingEvent);
-        sender.send(loggingEvent);
-        sender.send(loggingEvent);
-        sender.send(loggingEvent);
+        final NotificationVO notification = createNotificationVO();
+        sender.send(notification);
+        sender.send(notification);
+        sender.send(notification);
+        sender.send(notification);
+        sender.send(notification);
 
         // then
         verify(5, postRequestedFor(urlEqualTo("/")));
@@ -90,6 +89,6 @@ public class SenderIntegrationTest {
 
         // when
         sender.stop();
-        sender.send(createLoggingEvent().with(MockThrowableProxy.createThrowableProxy()));
+        sender.send(createNotificationVO());
     }
 }
