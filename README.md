@@ -16,7 +16,8 @@ A logback appender which pushes any event containing an exception to bugsnag.
 </dependency>
 ```
 
-## Example xml configuration
+## Configuration
+For a detailed description of the configuration parameters check the [wiki](https://github.com/codereligion/bugsnag-logback/wiki).
 ```xml
     <appender name="BUGSNAG" class="com.codereligion.bugsnag.logback.Appender">
         <!-- required -->
@@ -48,20 +49,36 @@ A logback appender which pushes any event containing an exception to bugsnag.
     </appender>
 ```
 
-## Example meta data provider
+## Meta data provider
+A ```MetaDataProvider``` implementation can be used to add additional information aka. "meta data" for each event,
+which is send to bugsnag.
+
 ```java
 package com.codereligion.bugsnag.logback;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.codereligion.bugsnag.logback.model.MetaDataVO;
+import java.util.Map;
 
 public class ExampleMetaDataProvider implements MetaDataProvider {
 
     @Override
     public MetaDataVO provide(ILoggingEvent loggingEvent) {
+        final Map<String,String> mdcPropertyMap = loggingEvent.getMDCPropertyMap();
+        final Map<String, String> loggerContextMap = loggingEvent.getLoggerContextVO().getPropertyMap();
+
         return new MetaDataVO()
+                // add some details about the logging event
                 .addToTab("Logging Details", "message", loggingEvent.getFormattedMessage())
-                .addToTab("Logging Details", "level", loggingEvent.getLevel());
+                .addToTab("Logging Details", "level", loggingEvent.getLevel())
+
+                // add some information from the MDC
+                .addToTab("User Details", "name", mdcPropertyMap.get("userName"))
+                .addToTab("User Details", "email", mdcPropertyMap.get("email"))
+
+                // add some information from the LoggerContext
+                .addToTab("Application Details", "version", loggerContextMap.get("appVersion"))
+                .addToTab("Application Details", "releaseDate", loggerContextMap.get("appReleaseDate"));
     }
 }
 

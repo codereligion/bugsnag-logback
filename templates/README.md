@@ -16,7 +16,8 @@ A logback appender which pushes any event containing an exception to bugsnag.
 </dependency>
 ```
 
-## Example xml configuration
+## Configuration
+For a detailed description of the configuration parameters check the [wiki](https://github.com/codereligion/bugsnag-logback/wiki).
 ```xml
     <appender name="BUGSNAG" class="com.codereligion.bugsnag.logback.Appender">
         <!-- required -->
@@ -48,7 +49,10 @@ A logback appender which pushes any event containing an exception to bugsnag.
     </appender>
 ```
 
-## Example meta data provider
+## Meta data provider
+A ```MetaDataProvider``` implementation can be used to add additional information aka. "meta data" for each event,
+which is send to bugsnag.
+
 ```java
 ${exampleMetaDataProvider}
 ```
