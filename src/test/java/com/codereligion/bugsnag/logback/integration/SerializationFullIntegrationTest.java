@@ -48,7 +48,7 @@ import static org.mockito.Mockito.mock;
 public class SerializationFullIntegrationTest {
 
     @Rule
-    public WireMockRule wireMockRule = new WireMockRule(8089);
+    public WireMockRule wireMockRule = new WireMockRule(IntegrationTestConfiguration.PORT);
 
     private Appender appender = new Appender();
 
@@ -57,7 +57,7 @@ public class SerializationFullIntegrationTest {
     @Before
     public void beforeEachTest() {
         appender.setApiKey("someApiKey");
-        appender.setEndpoint("localhost:8089");
+        appender.setEndpoint(IntegrationTestConfiguration.ENDPOINT);
         appender.setReleaseStage("test");
         appender.setNotifyReleaseStages("test");
         appender.setContext(mock(Context.class));

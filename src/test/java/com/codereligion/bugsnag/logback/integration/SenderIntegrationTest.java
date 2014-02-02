@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
 public class SenderIntegrationTest {
 
     @Rule
-    public WireMockRule wireMockRule = new WireMockRule(8089);
+    public WireMockRule wireMockRule = new WireMockRule(IntegrationTestConfiguration.PORT);
 
     private Sender sender = new Sender();
 
@@ -55,7 +55,7 @@ public class SenderIntegrationTest {
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON)));
 
         final Configuration configuration = new Configuration();
-        configuration.setEndpoint("localhost:8089");
+        configuration.setEndpoint(IntegrationTestConfiguration.ENDPOINT);
 
         final ContextAware contextAware = mock(ContextAware.class);
         sender.start(configuration, contextAware);
@@ -82,7 +82,7 @@ public class SenderIntegrationTest {
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON)));
 
         final Configuration configuration = new Configuration();
-        configuration.setEndpoint("localhost:8089");
+        configuration.setEndpoint(IntegrationTestConfiguration.ENDPOINT);
 
         final ContextAware contextAware = mock(ContextAware.class);
         sender.start(configuration, contextAware);

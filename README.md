@@ -64,7 +64,7 @@ public class ExampleMetaDataProvider implements MetaDataProvider {
 
     @Override
     public MetaDataVO provide(ILoggingEvent loggingEvent) {
-        final Map<String,String> mdcPropertyMap = loggingEvent.getMDCPropertyMap();
+        final Map<String,String> mdcMap = loggingEvent.getMDCPropertyMap();
         final Map<String, String> loggerContextMap = loggingEvent.getLoggerContextVO().getPropertyMap();
 
         return new MetaDataVO()
@@ -73,8 +73,8 @@ public class ExampleMetaDataProvider implements MetaDataProvider {
                 .addToTab("Logging Details", "level", loggingEvent.getLevel())
 
                 // add some information from the MDC
-                .addToTab("User Details", "name", mdcPropertyMap.get("userName"))
-                .addToTab("User Details", "email", mdcPropertyMap.get("email"))
+                .addToTab("User Details", "name", mdcMap.get("userName"))
+                .addToTab("User Details", "email", mdcMap.get("email"))
 
                 // add some information from the LoggerContext
                 .addToTab("Application Details", "version", loggerContextMap.get("appVersion"))

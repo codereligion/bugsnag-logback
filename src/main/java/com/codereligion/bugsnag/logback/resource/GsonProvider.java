@@ -15,13 +15,12 @@
  */
 package com.codereligion.bugsnag.logback.resource;
 
-import com.codereligion.bugsnag.logback.Configuration;
 import com.codereligion.bugsnag.logback.model.MetaDataVO;
 import com.codereligion.bugsnag.logback.model.TabVO;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class GsonProvider {
+public class    GsonProvider {
 
     private final Gson gson;
 
