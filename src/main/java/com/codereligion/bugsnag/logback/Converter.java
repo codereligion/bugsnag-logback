@@ -30,12 +30,6 @@ import java.util.List;
 
 public class Converter {
 
-    public static final String USER_ID = "userId";
-    public static final String APP_VERSION = "appVersion";
-    public static final String OS_VERSION = "osVersion";
-    public static final String CONTEXT = "context";
-    public static final String GROUPING_HASH = "groupingHash";
-
     private final Configuration configuration;
     private Optional<MetaDataProvider> metaDataProvider;
 
@@ -55,11 +49,11 @@ public class Converter {
         event.setReleaseStage(configuration.getReleaseStage());
         event.addExceptions(convertToExceptions(loggingEvent.getThrowableProxy()));
         event.setMetaData(convertToMetaData(loggingEvent));
-        event.setUserId(getValueFor(loggingEvent, USER_ID));
-        event.setAppVersion(getValueFor(loggingEvent, APP_VERSION));
-        event.setOsVersion(getValueFor(loggingEvent, OS_VERSION));
-        event.setContext(getValueFor(loggingEvent, CONTEXT));
-        event.setGroupingHash(getValueFor(loggingEvent, GROUPING_HASH));
+        event.setUserId(PredefinedMetaData.USER_ID.valueFor(loggingEvent));
+        event.setAppVersion(PredefinedMetaData.APP_VERSION.valueFor(loggingEvent));
+        event.setOsVersion(PredefinedMetaData.OS_VERSION.valueFor(loggingEvent));
+        event.setContext(PredefinedMetaData.CONTEXT.valueFor(loggingEvent));
+        event.setGroupingHash(PredefinedMetaData.GROUPING_HASH.valueFor(loggingEvent));
         return Collections.singletonList(event);
     }
 
@@ -95,29 +89,6 @@ public class Converter {
             }
         }
         return Optional.absent();
-    }
-
-    private String getValueFor(final ILoggingEvent loggingEvent, final String key) {
-
-        final String mdcProperty = loggingEvent.getMDCPropertyMap().get(key);
-
-        if (mdcProperty != null) {
-            return mdcProperty;
-        }
-
-        final String contextProperty = loggingEvent.getLoggerContextVO().getPropertyMap().get(key);
-
-        if (contextProperty != null) {
-            return contextProperty;
-        }
-
-        final String systemProperty = System.getProperty(key);
-
-        if (systemProperty != null) {
-            return systemProperty;
-        }
-
-        return null;
     }
 
     private List<ExceptionVO> convertToExceptions(final IThrowableProxy throwableProxy) {
