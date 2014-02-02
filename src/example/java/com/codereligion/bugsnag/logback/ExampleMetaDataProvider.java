@@ -21,7 +21,6 @@ public class ExampleMetaDataProvider implements MetaDataProvider {
                 .addToTab("User Details", "email", mdcMap.get("email"))
 
                 // add some information from the LoggerContext
-                .addToTab("Application Details", "version", loggerContextMap.get("appVersion"))
                 .addToTab("Application Details", "releaseDate", loggerContextMap.get("appReleaseDate"));
     }
 }
