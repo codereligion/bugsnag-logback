@@ -20,9 +20,6 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Context;
 import com.codereligion.bugsnag.logback.Appender;
 import com.codereligion.bugsnag.logback.Configuration;
-import com.codereligion.bugsnag.logback.mock.logging.MockStackTraceElement;
-import com.codereligion.bugsnag.logback.mock.logging.MockThrowableProxy;
-import com.codereligion.bugsnag.logback.mock.model.MockExceptionVO;
 import com.codereligion.bugsnag.logback.mock.model.MockMetaDataVO;
 import com.codereligion.bugsnag.logback.mock.model.MockNotificationVO;
 import com.codereligion.bugsnag.logback.resource.GsonProvider;
@@ -34,7 +31,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import static com.codereligion.bugsnag.logback.mock.logging.MockLoggingEvent.createLoggingEvent;
+import static com.codereligion.bugsnag.logback.mock.logging.MockStackTraceElement.createStackTraceElement;
+import static com.codereligion.bugsnag.logback.mock.logging.MockThrowableProxy.createThrowableProxy;
 import static com.codereligion.bugsnag.logback.mock.model.MockEventVO.createEventVO;
+import static com.codereligion.bugsnag.logback.mock.model.MockExceptionVO.createExceptionVO;
+import static com.codereligion.bugsnag.logback.mock.model.MockNotificationVO.createNotificationVO;
 import static com.codereligion.bugsnag.logback.mock.model.MockStackTraceVO.createStackTraceVO;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -86,21 +87,21 @@ public class SerializationFullIntegrationTest {
                 .withSystemProperty("osVersion", "someOsVersion")
                 .withContextProperty("context", "someContext")
                 .withContextProperty("groupingHash", "someGroupingHash")
-                .with(MockThrowableProxy.createThrowableProxy()
+                .with(createThrowableProxy()
                                 .withClassName("some.project.package.Class")
                                 .withMessage("some message")
                                 .addStackTraceElementProxy(
-                                        MockStackTraceElement.createStackTraceElement()
+                                        createStackTraceElement()
                                                 .withDeclaringClass("some.project.package.Class")
                                                 .withFileName("SomeFile.java")
                                                 .withLineNumber(42)
                                                 .withMethodName("someMethodName")
                                 )
-                                .withCause(MockThrowableProxy.createThrowableProxy()
+                                .withCause(createThrowableProxy()
                                         .withClassName("some.project.package.OtherClass")
                                         .withMessage("some other message")
                                         .addStackTraceElementProxy(
-                                                MockStackTraceElement.createStackTraceElement()
+                                                createStackTraceElement()
                                                         .withDeclaringClass("some.project.package.OtherSomeFile")
                                                         .withFileName("OtherSomeFile.java")
                                                         .withLineNumber(21)
@@ -110,7 +111,7 @@ public class SerializationFullIntegrationTest {
                 )
                 ;
 
-        final MockNotificationVO expectedNotification = MockNotificationVO.createNotificationVO()
+        final MockNotificationVO expectedNotification = createNotificationVO()
                 .withApiKey("someApiKey")
                 .add(createEventVO()
                         .withReleaseStage("test")
@@ -124,7 +125,7 @@ public class SerializationFullIntegrationTest {
                                 .add("Logging", "message", "someMessage")
                                 .add("User", null, null)
                         )
-                        .add(MockExceptionVO.createExceptionVO()
+                        .add(createExceptionVO()
                                 .withErrorClass("some.project.package.Class")
                                 .withMessage("some message")
                                 .add(createStackTraceVO()
@@ -134,7 +135,7 @@ public class SerializationFullIntegrationTest {
                                         .whichIsInProject()
                                 )
                         )
-                        .add(MockExceptionVO.createExceptionVO()
+                        .add(createExceptionVO()
                                 .withErrorClass("some.project.package.OtherClass")
                                 .withMessage("some other message")
                                 .add(createStackTraceVO()
