@@ -17,17 +17,24 @@ package com.codereligion.bugsnag.logback;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.codereligion.bugsnag.logback.model.EventVO;
+import com.codereligion.bugsnag.logback.model.ExceptionVO;
 import com.codereligion.bugsnag.logback.model.MetaDataVO;
 import com.codereligion.bugsnag.logback.model.NotificationVO;
+import com.codereligion.bugsnag.logback.model.StackTraceVO;
 import com.codereligion.bugsnag.logback.model.TabVO;
+import com.google.common.collect.Sets;
 import org.junit.Test;
 import static com.codereligion.bugsnag.logback.matcher.TabKeyValueMatcher.hasKeyValuePair;
 import static com.codereligion.bugsnag.logback.mock.logging.MockLoggingEvent.createLoggingEvent;
+import static com.codereligion.bugsnag.logback.mock.logging.MockStackTraceElement.createStackTraceElement;
 import static com.codereligion.bugsnag.logback.mock.logging.MockThrowableProxy.createThrowableProxy;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ConverterTest {
+
+    // TODO test recursion of throwable proxies
+    // TODO test with multiple stacktraces
 
     private Configuration configuration = new Configuration();
     private Converter converter = new Converter(configuration);
@@ -158,6 +165,137 @@ public class ConverterTest {
         // then
         final TabVO tab = event.getMetaData().getTabsByName().get("someTab");
         assertThat(tab, hasKeyValuePair("someProp", "someValue"));
+    }
+
+    @Test
+    public void convertsThrowableProxyClassNameToExceptionErrorClass() {
+        // given
+        final ILoggingEvent loggingEvent = createLoggingEvent()
+                .with(createThrowableProxy().withClassName("someClassName"));
+
+        // when
+        final NotificationVO notification = converter.convertToNotification(loggingEvent);
+        final EventVO event = notification.getEvents().get(0);
+        final ExceptionVO exception = event.getExceptions().get(0);
+
+        // then
+        assertThat(exception.getErrorClass(), is("someClassName"));
+    }
+
+    @Test
+    public void convertsThrowableProxyMessageToExceptionMessage() {
+        // given
+        final ILoggingEvent loggingEvent = createLoggingEvent()
+                .with(createThrowableProxy().withMessage("someMessage"));
+
+        // when
+        final NotificationVO notification = converter.convertToNotification(loggingEvent);
+        final EventVO event = notification.getEvents().get(0);
+        final ExceptionVO exception = event.getExceptions().get(0);
+
+        // then
+        assertThat(exception.getMessage(), is("someMessage"));
+    }
+
+    @Test
+    public void convertsStackTraceElementProxyClassNameAndMethodNameToStackTraceMethod() {
+        // given
+        final ILoggingEvent loggingEvent = createLoggingEvent()
+                .with(createThrowableProxy()
+                    .addStackTraceElementProxy(
+                            createStackTraceElement()
+                                    .withDeclaringClass("com.some.package.SomeClassName")
+                                    .withMethodName("someMethodName")));
+        // when
+        final NotificationVO notification = converter.convertToNotification(loggingEvent);
+        final EventVO event = notification.getEvents().get(0);
+        final ExceptionVO exception = event.getExceptions().get(0);
+        final StackTraceVO stackTrace = exception.getStacktrace().get(0);
+
+        // then
+        assertThat(stackTrace.getMethod(), is("com.some.package.SomeClassName.someMethodName"));
+    }
+
+    @Test
+    public void convertsStackTraceElementProxyLineNumberToStackTraceLineNumber() {
+        // given
+        final ILoggingEvent loggingEvent = createLoggingEvent()
+                .with(createThrowableProxy()
+                    .addStackTraceElementProxy(
+                            createStackTraceElement()
+                                    .withDeclaringClass("com.some.package.SomeClassName")
+                                    .withMethodName("someMethodName")
+                                    .withLineNumber(42)));
+        // when
+        final NotificationVO notification = converter.convertToNotification(loggingEvent);
+        final EventVO event = notification.getEvents().get(0);
+        final ExceptionVO exception = event.getExceptions().get(0);
+        final StackTraceVO stackTrace = exception.getStacktrace().get(0);
+
+        // then
+        assertThat(stackTrace.getLineNumber(), is(42));
+    }
+
+    @Test
+    public void convertsStackTraceElementProxyFileNameToStackTraceFile() {
+        // given
+        final ILoggingEvent loggingEvent = createLoggingEvent()
+                .with(createThrowableProxy()
+                    .addStackTraceElementProxy(
+                            createStackTraceElement()
+                                    .withDeclaringClass("com.some.package.SomeClassName")
+                                    .withMethodName("someMethodName")
+                                    .withFileName("SomeFileName")));
+        // when
+        final NotificationVO notification = converter.convertToNotification(loggingEvent);
+        final EventVO event = notification.getEvents().get(0);
+        final ExceptionVO exception = event.getExceptions().get(0);
+        final StackTraceVO stackTrace = exception.getStacktrace().get(0);
+
+        // then
+        assertThat(stackTrace.getFile(), is("SomeFileName"));
+    }
+
+    @Test
+    public void setsStackTraceAsNotInProjectWhenStackTraceElementClassNameIsMarkedAsSuch() {
+        // given
+        final ILoggingEvent loggingEvent = createLoggingEvent()
+                .with(createThrowableProxy()
+                    .addStackTraceElementProxy(
+                            createStackTraceElement()
+                                    .withDeclaringClass("com.some.package.SomeClassName")
+                                    .withMethodName("someMethodName")
+                                    .withFileName("SomeFileName")));
+        // when
+        final NotificationVO notification = converter.convertToNotification(loggingEvent);
+        final EventVO event = notification.getEvents().get(0);
+        final ExceptionVO exception = event.getExceptions().get(0);
+        final StackTraceVO stackTrace = exception.getStacktrace().get(0);
+
+        // then
+        assertThat(stackTrace.isInProject(), is(Boolean.FALSE));
+    }
+
+    @Test
+    public void setsStackTraceAsInProjectWhenStackTraceElementClassNameIsMarkedAsSuch() {
+        // given
+        configuration.setProjectPackages(Sets.newHashSet("com.some.package.SomeClassName"));
+
+        final ILoggingEvent loggingEvent = createLoggingEvent()
+                .with(createThrowableProxy()
+                    .addStackTraceElementProxy(
+                            createStackTraceElement()
+                                    .withDeclaringClass("com.some.package.SomeClassName")
+                                    .withMethodName("someMethodName")
+                                    .withFileName("SomeFileName")));
+        // when
+        final NotificationVO notification = converter.convertToNotification(loggingEvent);
+        final EventVO event = notification.getEvents().get(0);
+        final ExceptionVO exception = event.getExceptions().get(0);
+        final StackTraceVO stackTrace = exception.getStacktrace().get(0);
+
+        // then
+        assertThat(stackTrace.isInProject(), is(Boolean.TRUE));
     }
 
     public static class TestMetaDataProvider implements MetaDataProvider {

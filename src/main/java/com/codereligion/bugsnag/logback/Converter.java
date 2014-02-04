@@ -113,6 +113,7 @@ public class Converter {
     private List<StackTraceVO> convertToStackTraces(final IThrowableProxy throwableProxy) {
         final StackTraceElementProxy[] stackTraceElementProxies = throwableProxy.getStackTraceElementProxyArray();
         final List<StackTraceVO> stackTraces = Lists.newArrayList();
+
         for (final StackTraceElementProxy stackTraceElementProxy : stackTraceElementProxies) {
             final StackTraceElement stackTraceElement = stackTraceElementProxy.getStackTraceElement();
 
