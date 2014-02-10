@@ -31,6 +31,10 @@ public enum PredefinedMetaData {
         this.key = key;
     }
 
+    public String getKey() {
+        return key;
+    }
+
     public String valueFor(final ILoggingEvent loggingEvent) {
 
         final String mdcProperty = loggingEvent.getMDCPropertyMap().get(key);
