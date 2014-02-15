@@ -82,6 +82,8 @@ public class Sender {
                 contextAware.addError("Unexpected http status code: " + statusCode);
             }
 
+        } catch (final Throwable throwable) {
+            contextAware.addError("Could not deliver notification, unexpected exception occurred.", throwable);
         } finally {
             if (response != null) {
                 response.close();
