@@ -22,6 +22,7 @@ import com.codereligion.bugsnag.logback.model.MetaDataVO;
 import com.google.common.collect.Sets;
 import java.util.HashSet;
 import org.junit.Test;
+import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,7 +36,7 @@ public class ConfigurationTest {
 
     @Test
     public void hasDefaultEndPoint() {
-        assertThat(configuration.getEndpoint(), is("notify.bugsnag.com"));
+        assertThat(configuration.getEndpointWithProtocol(), endsWith("notify.bugsnag.com"));
     }
 
     @Test

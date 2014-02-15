@@ -41,10 +41,6 @@ public class Configuration implements GsonFilterProvider {
     private Set<String> ignoreClasses = Sets.newHashSet();
     private Optional<String> metaDataProviderClassName = Optional.absent();
 
-    public String getEndpoint() {
-        return endpoint;
-    }
-
     public String getEndpointWithProtocol() {
 
         final String protocol;
