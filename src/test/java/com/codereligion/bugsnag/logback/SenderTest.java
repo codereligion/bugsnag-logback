@@ -16,18 +16,22 @@
 package com.codereligion.bugsnag.logback;
 
 import ch.qos.logback.core.spi.ContextAware;
-import com.codereligion.bugsnag.logback.model.NotificationVO;
 import org.junit.Test;
+import static com.codereligion.bugsnag.logback.mock.model.MockNotificationVO.createNotificationVO;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 public class SenderTest {
 
-    private Sender sender = new Sender();
+    private final Configuration configuration = spy(new Configuration());
+    private final ContextAware contextAware = mock(ContextAware.class);
+    private final Sender sender = new Sender();
 
     @Test
     public void isStartedAfterStart() {
@@ -43,25 +47,30 @@ public class SenderTest {
     }
 
     @Test
+    public void doesNotSendWhenNotStopped() {
+        sender.start(configuration, contextAware);
+        sender.stop();
+        sender.send(createNotificationVO());
+        verifyZeroInteractions(configuration, contextAware);
+    }
+
+    @Test
     public void responseClosingIsNullSafe() {
-        final Configuration configuration = new Configuration();
         configuration.setEndpoint("notexisting");
 
-        sender.start(configuration, mock(ContextAware.class));
-        sender.send(mock(NotificationVO.class));
+        sender.start(configuration, contextAware);
+        sender.send(createNotificationVO());
     }
 
     @Test
     public void addsErrorWhenRequestCausedException() {
 
         // given
-        final Configuration configuration = new Configuration();
         configuration.setEndpoint("notexisting");
-        final ContextAware contextAware = mock(ContextAware.class);
 
         // when
         sender.start(configuration, contextAware);
-        sender.send(mock(NotificationVO.class));
+        sender.send(createNotificationVO());
 
         // then
         verify(contextAware).addError(eq("Could not deliver notification, unexpected exception occurred."), any(Throwable.class));
