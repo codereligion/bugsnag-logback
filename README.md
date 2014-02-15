@@ -17,36 +17,39 @@ A logback appender which pushes any event containing an exception to bugsnag.
 ```
 
 ## Configuration
-For a detailed description of the configuration parameters check the [wiki](https://github.com/codereligion/bugsnag-logback/wiki).
 ```xml
-    <appender name="BUGSNAG" class="com.codereligion.bugsnag.logback.Appender">
-        <!-- required -->
-        <apiKey>yourKey</apiKey>
+<appender name="BUGSNAG" class="com.codereligion.bugsnag.logback.Appender">
+    <!-- required, the api key from your project's settings page -->
+    <apiKey>yourKey</apiKey>
 
-        <!-- optional, defaults to false -->
-        <sslEnabled>true</sslEnabled>
+    <!-- optional (default: false), allows switching between http and https -->
+    <sslEnabled>true</sslEnabled>
 
-        <!-- optional, defaults to production -->
-        <releaseStage>staging</releaseStage>
+    <!-- optional (default: production), the current release stage for the application -->
+    <releaseStage>staging</releaseStage>
 
-        <!-- optional, comma separated set of stage names, defaults to an empty set -->
-        <notifyReleaseStages>staging,production</notifyReleaseStages>
+    <!-- optional (default: empty), comma separated set of stage names which is matched against
+    the releaseStage to decide whether to send the notification or not -->
+    <notifyReleaseStages>staging,production</notifyReleaseStages>
 
-        <!-- optional, comma separated set of package names, defaults to an empty set-->
-        <projectPackages>com.your.project.package.name</projectPackages>
+    <!-- optional (default: empty), comma separated set of package names which is used to
+    highlight project specific lines of exception stacktraces -->
+    <projectPackages>com.your.project.package.name</projectPackages>
 
-        <!-- optional, comma separated set of package names, defaults to an empty set -->
-        <ignoreClasses>com.some.ignored.package,com.some.other.package</ignoreClasses>
+    <!-- optional (default: empty), comma separated set of fully qualified class names which is
+    used to ignore specific throwables -->
+    <ignoreClasses>com.some.ignored.package,com.some.other.package</ignoreClasses>
 
-        <!-- optional, comma separated set of to be filtered words, defaults to an empty set -->
-        <filters>password,key</filters>
+    <!-- optional (default: empty), comma separated set of strings which will be removed from
+    any (nested) object provided by a MetaDataProvider -->
+    <filters>password,key</filters>
 
-        <!-- optional, fully qualified name of your meta data provider class -->
-        <metaDataProviderClassName>com.your.project.MetaDataProvider</metaDataProviderClassName>
+    <!-- optional, fully qualified name of your MetaDataProvider implementation -->
+    <metaDataProviderClassName>com.your.project.MetaDataProvider</metaDataProviderClassName>
 
-        <!-- optional, defaults to notify.bugsnag.com -->
-        <endpoint>notify.bugsnag.com</endpoint>
-    </appender>
+    <!-- optional (default: notify.bugsnag.com), the url to notify -->
+    <endpoint>notify.bugsnag.com</endpoint>
+</appender>
 ```
 
 ## Meta data
@@ -76,7 +79,7 @@ In case a property appears in more than one scope the more detailed scope overru
 mapped diagnostic context > logger context > system properties
 
 ### Custom meta data fields
-By implementing and registering a ```MetaDataProvider``` one can add groups of key/value pairs to each event. Each group
+By implementing and registering a ```MetaDataProvider``` you can add groups of key/value pairs to each event. Each group
 manifests itself as an additional tab on the bugsnag view of an event. Each tab contains a list of key/value pairs.
 Keys are expected to be strings, whereas value can be complex objects.
 
