@@ -84,10 +84,10 @@ public class Sender {
 
         } catch (final Throwable throwable) {
             contextAware.addError("Could not deliver notification, unexpected exception occurred.", throwable);
-        } finally {
-            if (response != null) {
-                response.close();
-            }
+        }
+
+        if (response != null) {
+            response.close();
         }
     }
 
