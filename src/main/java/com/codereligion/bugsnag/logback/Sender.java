@@ -17,7 +17,6 @@ package com.codereligion.bugsnag.logback;
 
 import ch.qos.logback.core.spi.ContextAware;
 import com.codereligion.bugsnag.logback.model.NotificationVO;
-import com.codereligion.bugsnag.logback.resource.GsonMessageBodyReader;
 import com.codereligion.bugsnag.logback.resource.GsonMessageBodyWriter;
 import com.codereligion.bugsnag.logback.resource.GsonProvider;
 import com.codereligion.bugsnag.logback.resource.NotifierResource;
@@ -107,7 +106,6 @@ public class Sender {
 
         return ClientBuilder
                 .newClient()
-                .register(new GsonMessageBodyReader(gson))
                 .register(new GsonMessageBodyWriter(gson));
     }
 }

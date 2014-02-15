@@ -39,19 +39,33 @@ public class GsonMessageBodyWriter implements MessageBodyWriter<Object> {
     }
 
     @Override
-    public boolean isWriteable(final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType) {
+    public boolean isWriteable(
+            final Class<?> type,
+            final Type genericType,
+            final Annotation[] annotations,
+            final MediaType mediaType) {
         return true;
     }
 
     @Override
-    public long getSize(final Object object, final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType) {
+    public long getSize(
+            final Object object,
+            final Class<?> type,
+            final Type genericType,
+            final Annotation[] annotations,
+            final MediaType mediaType) {
         return -1;
     }
 
     @Override
-    public void writeTo(final Object object, final Class<?> type, final Type genericType, final Annotation[] annotations,
-                        final MediaType mediaType, final MultivaluedMap<String, Object> httpHeaders,
-                        final OutputStream entityStream) throws IOException {
+    public void writeTo(
+            final Object object,
+            final Class<?> type,
+            final Type genericType,
+            final Annotation[] annotations,
+            final MediaType mediaType,
+            final MultivaluedMap<String, Object> httpHeaders,
+            final OutputStream entityStream) throws IOException {
 
         final OutputStreamWriter writer = new OutputStreamWriter(entityStream, Charsets.UTF_8);
 
