@@ -23,11 +23,14 @@ import com.codereligion.bugsnag.logback.model.NotificationVO;
 import com.codereligion.bugsnag.logback.model.StackTraceVO;
 import com.codereligion.bugsnag.logback.model.TabVO;
 import com.google.common.collect.Sets;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import static com.codereligion.bugsnag.logback.matcher.TabKeyValueMatcher.hasKeyValuePair;
 import static com.codereligion.bugsnag.logback.mock.logging.MockLoggingEvent.createLoggingEvent;
 import static com.codereligion.bugsnag.logback.mock.logging.MockStackTraceElement.createStackTraceElement;
 import static com.codereligion.bugsnag.logback.mock.logging.MockThrowableProxy.createThrowableProxy;
+import static org.hamcrest.CoreMatchers.any;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -35,6 +38,9 @@ public class ConverterTest {
 
     // TODO test recursion of throwable proxies
     // TODO test with multiple stacktraces
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     private Configuration configuration = new Configuration();
     private Converter converter = new Converter(configuration);
@@ -298,11 +304,69 @@ public class ConverterTest {
         assertThat(stackTrace.isInProject(), is(Boolean.TRUE));
     }
 
+    @Test
+    public void throwsIllegalStateExceptionWhenMetaDataProviderIsNotAccessible() {
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectCause(any(IllegalAccessException.class));
+
+        // given
+        configuration.setMetaDataProviderClassName(PrivateMetaDataProvider.class.getName());
+
+        //when
+        converter.convertToNotification(createLoggingEvent().with(createThrowableProxy()));
+    }
+
+    @Test
+    public void throwsIllegalStateExceptionWhenMetaDataProviderHasNoPublicConstructor() {
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectCause(any(InstantiationException.class));
+
+        // given
+        configuration.setMetaDataProviderClassName(NoPublicDefaultConstructorMetaDataProvider.class.getName());
+
+        //when
+        converter.convertToNotification(createLoggingEvent().with(createThrowableProxy()));
+    }
+
+    @Test
+    public void throwsIllegalStateExceptionWhenMetaDataProviderClassCannotBeFound() {
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectCause(any(ClassNotFoundException.class));
+
+        // given
+        configuration.setMetaDataProviderClassName("notexisting");
+
+        //when
+        converter.convertToNotification(createLoggingEvent().with(createThrowableProxy()));
+    }
+
     public static class TestMetaDataProvider implements MetaDataProvider {
 
         @Override
         public MetaDataVO provide(ILoggingEvent loggingEvent) {
             return new MetaDataVO().addToTab("someTab", "someProp", loggingEvent.getMDCPropertyMap().get("someProp"));
+        }
+    }
+
+    private static class PrivateMetaDataProvider implements MetaDataProvider {
+        @Override
+        public MetaDataVO provide(final ILoggingEvent loggingEvent) {
+            return null;
+        }
+    }
+
+    public static class NoPublicDefaultConstructorMetaDataProvider implements MetaDataProvider {
+        public NoPublicDefaultConstructorMetaDataProvider(final String foo) {
+        }
+
+        @Override
+        public MetaDataVO provide(final ILoggingEvent loggingEvent) {
+            return null;
+        }
+    }
+
+    public static class NoImplementationOfMetaDataProvider {
+        public NoImplementationOfMetaDataProvider() {
         }
     }
 }

@@ -20,6 +20,7 @@ import com.codereligion.bugsnag.logback.resource.GsonFilterProvider;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
+import java.lang.reflect.Constructor;
 import java.util.Set;
 
 public class Configuration implements GsonFilterProvider {
@@ -162,8 +163,26 @@ public class Configuration implements GsonFilterProvider {
     public boolean isMetaProviderClassNameInValid() {
         if (metaDataProviderClassName.isPresent()) {
             try {
-                Class.forName(metaDataProviderClassName.get());
+                final Class<?> metaDataProviderClass = Class.forName(metaDataProviderClassName.get());
+                final Constructor<?>[] constructors = metaDataProviderClass.getConstructors();
+                final boolean hasNoPublicConstructors = constructors.length == 0;
+                final boolean hasNoDefaultConstructor = !containsDefaultConstructor(constructors);
+                final boolean doesNotImplementMetaDataProvider = !MetaDataProvider.class.isAssignableFrom(metaDataProviderClass);
+
+                return hasNoPublicConstructors || hasNoDefaultConstructor || doesNotImplementMetaDataProvider;
+
             } catch (final ClassNotFoundException e) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean containsDefaultConstructor(final Constructor<?>[] constructors) {
+        for (final Constructor<?> constructor : constructors) {
+            final boolean noParameters = constructor.getParameterTypes().length == 0;
+            if (noParameters) {
                 return true;
             }
         }

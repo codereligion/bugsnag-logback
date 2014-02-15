@@ -15,9 +15,10 @@
  */
 package com.codereligion.bugsnag.logback;
 
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.spi.ContextAware;
 import com.codereligion.bugsnag.logback.integration.CustomMetaDataProvider;
-import com.codereligion.bugsnag.logback.Configuration;
+import com.codereligion.bugsnag.logback.model.MetaDataVO;
 import com.google.common.collect.Sets;
 import java.util.HashSet;
 import org.junit.Test;
@@ -106,6 +107,27 @@ public class ConfigurationTest {
     }
 
     @Test
+    public void isInvalidWhenMetaDataProviderClassHasNoPublicConstructor() {
+        configuration.setApiKey("someKey");
+        configuration.setMetaDataProviderClassName(PrivateMetaDataProvider.class.getName());
+        assertThat(configuration.isInvalid(), is(true));
+    }
+
+    @Test
+    public void isInvalidWhenMetaDataProviderClassHasNoPublicDefaultConstructor() {
+        configuration.setApiKey("someKey");
+        configuration.setMetaDataProviderClassName(NoPublicDefaultConstructorMetaDataProvider.class.getName());
+        assertThat(configuration.isInvalid(), is(true));
+    }
+
+    @Test
+    public void isInvalidWhenMetaDataProviderClassDoesNotImplementMetaDataProvider() {
+        configuration.setApiKey("someKey");
+        configuration.setMetaDataProviderClassName(NoImplementationOfMetaDataProvider.class.getName());
+        assertThat(configuration.isInvalid(), is(true));
+    }
+
+    @Test
     public void isValidWhenMetaProviderClassIsPresentAndLoadable() {
         configuration.setApiKey("someKey");
         configuration.setMetaDataProviderClassName(CustomMetaDataProvider.class.getCanonicalName());
@@ -118,6 +140,7 @@ public class ConfigurationTest {
         configuration.setMetaDataProviderClassName(null);
         assertThat(configuration.isInvalid(), is(false));
     }
+
 
     @Test
     public void addsNoErrorsForValidConfiguration() {
@@ -271,5 +294,27 @@ public class ConfigurationTest {
         configuration.setMetaDataProviderClassName(CustomMetaDataProvider.class.getCanonicalName());
 
         assertThat(configuration.hasMetaDataProvider(), is(true));
+    }
+
+    private static class PrivateMetaDataProvider implements MetaDataProvider {
+        @Override
+        public MetaDataVO provide(final ILoggingEvent loggingEvent) {
+            return null;
+        }
+    }
+
+    public static class NoPublicDefaultConstructorMetaDataProvider implements MetaDataProvider {
+        public NoPublicDefaultConstructorMetaDataProvider(final String foo) {
+        }
+
+        @Override
+        public MetaDataVO provide(final ILoggingEvent loggingEvent) {
+            return null;
+        }
+    }
+
+    public static class NoImplementationOfMetaDataProvider {
+        public NoImplementationOfMetaDataProvider() {
+        }
     }
 }
