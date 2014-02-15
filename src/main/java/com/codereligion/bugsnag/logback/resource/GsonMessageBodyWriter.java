@@ -70,17 +70,7 @@ public class GsonMessageBodyWriter implements MessageBodyWriter<Object> {
         final OutputStreamWriter writer = new OutputStreamWriter(entityStream, Charsets.UTF_8);
 
         try {
-            final Type jsonType;
-            if (type.equals(genericType)) {
-                jsonType = type;
-            } else {
-                if (genericType == null) {
-                    jsonType = type.getGenericSuperclass();
-                } else {
-                    jsonType = genericType;
-                }
-            }
-            gson.toJson(object, jsonType, writer);
+            gson.toJson(object, type, writer);
         } finally {
             writer.close();
         }
