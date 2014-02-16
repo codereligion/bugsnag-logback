@@ -21,6 +21,11 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 
+/**
+ * Custom {@link JsonSerializer} for {@link MetaDataVO}s which directly serializes the underlying data structure.
+ *
+ * @author Sebastian Gröbler
+ */
 public class MetaDataVOSerializer implements JsonSerializer<MetaDataVO> {
 
     @Override

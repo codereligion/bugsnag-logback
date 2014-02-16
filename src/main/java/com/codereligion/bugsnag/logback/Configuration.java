@@ -16,14 +16,20 @@
 package com.codereligion.bugsnag.logback;
 
 import ch.qos.logback.core.spi.ContextAware;
-import com.codereligion.bugsnag.logback.resource.GsonFilterProvider;
+import com.codereligion.bugsnag.logback.resource.JsonFilterProvider;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import java.lang.reflect.Constructor;
 import java.util.Set;
 
-public class Configuration implements GsonFilterProvider {
+/**
+ * Holds all configurable elements of this appender.
+ *
+ * @author Sebastian Gröbler
+ */
+public class Configuration implements JsonFilterProvider {
+
     private static final String DEFAULT_ENDPOINT = "notify.bugsnag.com";
     private static final boolean DEFAULT_USE_SSL = false;
     private static final String DEFAULT_RELEASE_STAGE = "production";
@@ -41,6 +47,9 @@ public class Configuration implements GsonFilterProvider {
     private Set<String> ignoreClasses = Sets.newHashSet();
     private Optional<String> metaDataProviderClassName = Optional.absent();
 
+    /**
+     * @return the full url of the endpoint
+     */
     public String getEndpointWithProtocol() {
 
         final String protocol;
@@ -53,62 +62,119 @@ public class Configuration implements GsonFilterProvider {
         return protocol + PROTOCOL_HOST_SEPARATOR + endpoint;
     }
 
-    public void setEndpoint(String endpoint) {
+    /**
+     * @see Appender#setEndpoint(String)
+     * @param endpoint the host name of the endpoint
+     */
+    public void setEndpoint(final String endpoint) {
         this.endpoint = endpoint;
     }
 
+    /**
+     * @see Appender#setApiKey(String)
+     * @return the api key
+     */
     public String getApiKey() {
         return apiKey;
     }
 
-    public void setApiKey(String apiKey) {
+    /**
+     * @see Appender#setApiKey(String)
+     * @param apiKey the api key
+     */
+    public void setApiKey(final String apiKey) {
         this.apiKey = apiKey;
     }
 
+    /**
+     * @see Appender#setReleaseStage(String)
+     * @return the release stage
+     */
     public String getReleaseStage() {
         return releaseStage;
     }
 
-    public void setReleaseStage(String releaseStage) {
+    /**
+     * @see Appender#setReleaseStage(String)
+     * @param releaseStage the release stage
+     */
+    public void setReleaseStage(final String releaseStage) {
         this.releaseStage = releaseStage;
     }
 
+    /**
+     * @see Appender#setSslEnabled(boolean)
+     * @return true when https is used, false when http is used
+     */
     public boolean isSslEnabled() {
         return sslEnabled;
     }
 
-    public void setSslEnabled(boolean sslEnabled) {
+    /**
+     * @see Appender#setSslEnabled(boolean)
+     * @param sslEnabled true to enabled https, false for http
+     */
+    public void setSslEnabled(final boolean sslEnabled) {
         this.sslEnabled = sslEnabled;
     }
 
-    public void setNotifyReleaseStages(Set<String> notifyReleaseStages) {
+    /**
+     * @see Appender#setNotifyReleaseStages(String)
+     * @param notifyReleaseStages the notifiable release stages
+     */
+    public void setNotifyReleaseStages(final Set<String> notifyReleaseStages) {
         this.notifyReleaseStages = notifyReleaseStages;
     }
 
-    public void setFilters(Set<String> filters) {
+    /**
+     * @see Appender#setFilters(String)
+     * @param filters the meta data filters
+     */
+    public void setFilters(final Set<String> filters) {
         this.filters = filters;
     }
 
-    public void setProjectPackages(Set<String> projectPackages) {
+    /**
+     * @see Appender#setProjectPackages(String)
+     * @param projectPackages the project packages
+     */
+    public void setProjectPackages(final Set<String> projectPackages) {
         this.projectPackages = projectPackages;
     }
 
-    public void setIgnoreClasses(Set<String> ignoreClasses) {
+    /**
+     * @see Appender#setIgnoreClasses(String)
+     * @param ignoreClasses the ignored throwable classes
+     */
+    public void setIgnoreClasses(final Set<String> ignoreClasses) {
         this.ignoreClasses = ignoreClasses;
     }
 
+    /**
+     * @return true when a {@link MetaDataProvider} class name was specified
+     */
     public boolean hasMetaDataProvider() {
         return metaDataProviderClassName.isPresent();
     }
 
+    /**
+     * @return the optional of the {@link MetaDataProvider} class name
+     */
     public Optional<String> getMetaDataProviderClassName() {
         return metaDataProviderClassName;
     }
 
-    public void setMetaDataProviderClassName(String metaDataProviderClassName) {
+    /**
+     * @param metaDataProviderClassName the fully qualified class name of a {@link MetaDataProvider}
+     */
+    public void setMetaDataProviderClassName(final String metaDataProviderClassName) {
         this.metaDataProviderClassName = Optional.fromNullable(metaDataProviderClassName);
     }
 
+    /**
+     * @return true when the specified {@code releaseStage} is not included in the specified
+     * {@code notifyReleaseStages}.
+     */
     public boolean isStageIgnored() {
 
         if (notifyReleaseStages.isEmpty()) {
@@ -118,6 +184,10 @@ public class Configuration implements GsonFilterProvider {
         return !notifyReleaseStages.contains(releaseStage);
     }
 
+    /**
+     * @param className the fully qualified class name to check
+     * @return true when it starts with any of the specified {@code projectPackages}
+     */
     public boolean isInProject(final String className) {
 
         for (final String packageName : projectPackages) {
@@ -129,14 +199,25 @@ public class Configuration implements GsonFilterProvider {
         return false;
     }
 
+    /**
+     * @param className the fully qualified class name to check
+     * @return true when the name of the throwable class is being ignored by the specified {@code ignoreClasses}
+     */
     public boolean shouldNotifyFor(final String className) {
         return !ignoreClasses.contains(className);
     }
 
+    /**
+     * @param key the key to check
+     * @return true when the given key is contained in the specified {@code filters}
+     */
     public boolean isIgnoredByFilter(final String key) {
         return filters.contains(key);
     }
 
+    /**
+     * @return true when all fields are valid
+     */
     public boolean isInvalid() {
         return isEndpointInvalid() ||
                 isApiKeyInvalid() ||
@@ -144,19 +225,42 @@ public class Configuration implements GsonFilterProvider {
                 isMetaProviderClassNameInValid();
     }
 
-    public boolean isEndpointInvalid() {
+    /**
+     * @param contextAware the {@link ContextAware} implementation to which potential errors will be added
+     */
+    public void addErrors(final ContextAware contextAware) {
+        if (isEndpointInvalid()) {
+            contextAware.addError("endpoint must not be null nor empty");
+        }
+
+        if (isApiKeyInvalid()) {
+            contextAware.addError("apiKey must not be null nor empty");
+        }
+
+        if (isReleaseStageInvalid()) {
+            contextAware.addError("releaseStage must not be null nor empty");
+        }
+
+        if (isMetaProviderClassNameInValid()) {
+            contextAware.addError("Could not instantiate class: " + getMetaDataProviderClassName().get() + ". " +
+                    "Make sure that you provided the fully qualified class name and that the class has a public " +
+                    "accessible default constructor.");
+        }
+    }
+
+    private boolean isEndpointInvalid() {
         return Strings.isNullOrEmpty(endpoint);
     }
 
-    public boolean isApiKeyInvalid() {
+    private boolean isApiKeyInvalid() {
         return Strings.isNullOrEmpty(apiKey);
     }
 
-    public boolean isReleaseStageInvalid() {
+    private boolean isReleaseStageInvalid() {
         return Strings.isNullOrEmpty(releaseStage);
     }
 
-    public boolean isMetaProviderClassNameInValid() {
+    private boolean isMetaProviderClassNameInValid() {
         if (metaDataProviderClassName.isPresent()) {
             try {
                 final Class<?> metaDataProviderClass = Class.forName(metaDataProviderClassName.get());
@@ -184,24 +288,5 @@ public class Configuration implements GsonFilterProvider {
         }
 
         return false;
-    }
-
-    public void addErrors(final ContextAware contextAware) {
-        if (isEndpointInvalid()) {
-            contextAware.addError("endpoint must not be null nor empty");
-        }
-
-        if (isApiKeyInvalid()) {
-            contextAware.addError("apiKey must not be null nor empty");
-        }
-
-        if (isReleaseStageInvalid()) {
-            contextAware.addError("releaseStage must not be null nor empty");
-        }
-
-        if (isMetaProviderClassNameInValid()) {
-            contextAware.addError("Could not instantiate class: " + getMetaDataProviderClassName().get() + ". " +
-                "Make sure that you provided the fully qualified class name and that the class has public access.");
-        }
     }
 }

@@ -15,12 +15,15 @@
  */
 package com.codereligion.bugsnag.logback.model;
 
+/**
+ * Represents one line in an exception's stack trace.
+ *
+ * @author Sebastian Gröbler
+ */
 public class StackTraceVO {
 
     /**
      * The file that this stack frame was executing.
-     * It is recommended that you strip any unnecessary or common
-     * information from the beginning of the path.
      */
     private String file;
 
@@ -35,13 +38,7 @@ public class StackTraceVO {
     private String method;
 
     /**
-     * Is this stacktrace line is in the user's project code, set
-     * this to true. It is useful for developers to be able to see
-     * which lines of a stacktrace are within their own application,
-     * and which are within third party libraries. This boolean field
-     * allows Bugsnag to display this information in the stacktrace
-     * as well as use the information to help group errors better.
-     * (Optional, defaults to false).
+     * True when this line is originated in the project's code.
      */
     private boolean inProject;
 
@@ -49,7 +46,7 @@ public class StackTraceVO {
         return file;
     }
 
-    public void setFile(String file) {
+    public void setFile(final String file) {
         this.file = file;
     }
 
@@ -57,7 +54,7 @@ public class StackTraceVO {
         return lineNumber;
     }
 
-    public void setLineNumber(int lineNumber) {
+    public void setLineNumber(final int lineNumber) {
         this.lineNumber = lineNumber;
     }
 
@@ -65,7 +62,7 @@ public class StackTraceVO {
         return method;
     }
 
-    public void setMethod(String method) {
+    public void setMethod(final String method) {
         this.method = method;
     }
 
@@ -73,7 +70,7 @@ public class StackTraceVO {
         return inProject;
     }
 
-    public void setInProject(boolean inProject) {
+    public void setInProject(final boolean inProject) {
         this.inProject = inProject;
     }
 }

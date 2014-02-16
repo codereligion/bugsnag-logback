@@ -15,11 +15,16 @@
  */
 package com.codereligion.bugsnag.logback.model;
 
+/**
+ * Static information about this notifier.
+ *
+ * @author Sebastian Gröbler
+ */
 public class NotifierVO {
 
     private static final String NOTIFIER_NAME = "Bugsnag Logback Notifier";
     private static final String NOTIFIER_VERSION = "1.0.0";
-    private static final String NOTIFIER_URL = "https://github.com/sierragolf/bugsnag-logback";
+    private static final String NOTIFIER_URL = "https://github.com/codereligion/bugsnag-logback";
 
     /**
      * The notifier name

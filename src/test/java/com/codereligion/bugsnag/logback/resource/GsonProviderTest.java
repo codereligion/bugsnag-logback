@@ -26,8 +26,8 @@ import static org.mockito.Mockito.mock;
 
 public class GsonProviderTest {
 
-    private GsonFilterProvider gsonFilterProvider = mock(GsonFilterProvider.class);
-    private GsonProvider gsonProvider = new GsonProvider(gsonFilterProvider);
+    private JsonFilterProvider jsonFilterProvider = mock(JsonFilterProvider.class);
+    private GsonProvider gsonProvider = new GsonProvider(jsonFilterProvider);
 
     @Test
     public void registersAdapterForMetaDataVO() {

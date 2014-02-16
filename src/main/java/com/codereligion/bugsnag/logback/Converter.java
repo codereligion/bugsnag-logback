@@ -28,19 +28,33 @@ import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Converts a logback {@link ILoggingEvent} into a bugsnag {@link NotificationVO}.
+ *
+ * @author Sebastian Gröbler
+ */
 public class Converter {
 
     private final Configuration configuration;
     private Optional<MetaDataProvider> metaDataProvider;
 
+    /**
+     * Creates a new instance for the given {@code configuration}.
+     * @param configuration the configuration to work with
+     */
     public Converter(final Configuration configuration) {
         this.configuration = configuration;
     }
 
-    public NotificationVO convertToNotification(final ILoggingEvent event) {
+    /**
+     * Converts the given logback {@link ILoggingEvent} into a bugsnag {@link NotificationVO}.
+     * @param loggingEvent the event to convert
+     * @return a new instance of {@link NotificationVO}
+     */
+    public NotificationVO convertToNotification(final ILoggingEvent loggingEvent) {
         final NotificationVO notification = new NotificationVO();
         notification.setApiKey(configuration.getApiKey());
-        notification.addEvents(convertToEvents(event));
+        notification.addEvents(convertToEvents(loggingEvent));
         return notification;
     }
 
@@ -101,7 +115,7 @@ public class Converter {
         final ExceptionVO exception = new ExceptionVO();
         exception.setErrorClass(throwableProxy.getClassName());
         exception.setMessage(throwableProxy.getMessage());
-        exception.addStacktrace(convertToStackTraces(throwableProxy));
+        exception.addStackTrace(convertToStackTraces(throwableProxy));
         exceptions.add(exception);
 
         final boolean hasCause = throwableProxy.getCause() != null;

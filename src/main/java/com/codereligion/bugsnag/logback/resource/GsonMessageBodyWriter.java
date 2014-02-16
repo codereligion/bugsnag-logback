@@ -28,12 +28,21 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+/**
+ * Glues together the json serialization provided by {@link Gson} with the JAX-RS implementation.
+ *
+ * @author Sebastian Gröbler
+ */
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
 public class GsonMessageBodyWriter implements MessageBodyWriter<Object> {
 
     private final Gson gson;
 
+    /**
+     * Creates a new instance using the given {@code gson} for serialization.
+     * @param gson the {@link Gson} object to use
+     */
     public GsonMessageBodyWriter(final Gson gson) {
         this.gson = gson;
     }

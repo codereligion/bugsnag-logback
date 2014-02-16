@@ -15,8 +15,19 @@
  */
 package com.codereligion.bugsnag.logback.resource;
 
-public interface GsonFilterProvider {
+/**
+ * Provides filtering information for the json payload.
+ *
+ * @author Sebastian Gröbler
+ */
+public interface JsonFilterProvider {
 
+    /**
+     * Checks if the given {@code key} is ignored.
+     *
+     * @param key the key to check
+     * @return true when the given {@code key} is ignored by any of the filters
+     */
     boolean isIgnoredByFilter(String key);
 
 }

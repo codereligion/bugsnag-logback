@@ -23,7 +23,7 @@ import com.google.common.collect.Sets;
 import java.util.Set;
 
 /**
- * Converts {@link ILoggingEvent}s to {@link NotificationVO}s and sends them to the Bugsnag API.
+ * Converts {@link ILoggingEvent}s to {@link NotificationVO}s and sends them to the bugsnag api.
  *
  * @author Sebastian Gröbler
  */
@@ -80,7 +80,7 @@ public class Appender extends AppenderBase<ILoggingEvent> {
     }
 
     /**
-     * Sets the api key used for authentication and authorization with the bugsnag API.
+     * Sets the api key used for authentication and authorization with the bugsnag api.
      *
      * @param apiKey the api key
      */
@@ -89,7 +89,7 @@ public class Appender extends AppenderBase<ILoggingEvent> {
     }
 
     /**
-     * Allows switching between http and https for communication with the bugsnag API.
+     * Allows switching between http and https for communication with the bugsnag api.
      *
      * <p/>Optional, default: false.
      *
@@ -100,7 +100,7 @@ public class Appender extends AppenderBase<ILoggingEvent> {
     }
 
     /**
-     * Sets the bugsnag API endpoint's host name.
+     * Sets the bugsnag api endpoint's host name.
      *
      * <p/>Optional, default: notify.bugsnag.com
      *

@@ -18,32 +18,31 @@ package com.codereligion.bugsnag.logback.model;
 import com.google.common.collect.Lists;
 import java.util.List;
 
+/**
+ * Represents a bugsnag error event.
+ *
+ * @author Sebastian Gröbler
+ */
 public class EventVO {
 
     /**
-     * A unique identifier for a user affected by this event. This could be
-     * any distinct identifier that makes sense for your application/platform.
-     * This field is optional but highly recommended.
+     * A unique identifier for a user affected by this event.
      */
     private String userId;
 
     /**
      * The version number of the application which generated the error.
-     * (optional, default none)
      */
     private String appVersion;
 
     /**
      * The operating system version of the client that the error was
-     * generated on. (optional, default none)
+     * generated on.
      */
     private String osVersion;
 
     /**
-     *  The release stage that this error occurred in, for example
-     *  "development" or "production". This can be any string, but "production"
-     *  will be highlighted differently in bugsnag in the future, so please use
-     *  "production" appropriately.
+     *  The release stage that this error occurred in.
      */
     private String releaseStage;
 
@@ -51,36 +50,22 @@ public class EventVO {
      * A string representing what was happening in the application at the
      * time of the error. This string could be used for grouping purposes,
      * depending on the event.
-     * Usually this would represent the controller and action in a server
-     * based project. It could represent the screen that the user was
-     * interacting with in a client side project.
      */
     private String context;
 
     /**
      * All errors with the same groupingHash will be grouped together within
      * the bugsnag dashboard.
-     * This gives a notifier more control as to how grouping should be performed.
-     * We recommend including the errorClass of the exception in here so a different
-     * class of error will be grouped separately.
-     * (optional)
      */
     private String groupingHash;
 
     /**
-     * An object containing any further data you wish to attach to this error
-     * event. This should contain one or more objects, with each object being
-     * displayed in its own tab on the event details on the Bugsnag website.
-     * (Optional).
+     * An object containing any further data which should be attached to this event.
      */
     private MetaDataVO metaData;
 
     /**
-     * An array of exceptions that occurred during this event. Most of the
-     * time there will only be one exception, but some languages support
-     * "nested" or "caused by" exceptions. In this case, exceptions should
-     * be unwrapped and added to the array one at a time. The first exception
-     * raised should be first in this array.
+     * A list representation of the nested exceptions contained by the causing logging event.
      */
     private List<ExceptionVO> exceptions = Lists.newArrayList();
 
@@ -88,7 +73,7 @@ public class EventVO {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(final String userId) {
         this.userId = userId;
     }
 
@@ -96,7 +81,7 @@ public class EventVO {
         return appVersion;
     }
 
-    public void setAppVersion(String appVersion) {
+    public void setAppVersion(final String appVersion) {
         this.appVersion = appVersion;
     }
 
@@ -104,7 +89,7 @@ public class EventVO {
         return osVersion;
     }
 
-    public void setOsVersion(String osVersion) {
+    public void setOsVersion(final String osVersion) {
         this.osVersion = osVersion;
     }
 
@@ -112,7 +97,7 @@ public class EventVO {
         return releaseStage;
     }
 
-    public void setReleaseStage(String releaseStage) {
+    public void setReleaseStage(final String releaseStage) {
         this.releaseStage = releaseStage;
     }
 
@@ -120,7 +105,7 @@ public class EventVO {
         return context;
     }
 
-    public void setContext(String context) {
+    public void setContext(final String context) {
         this.context = context;
     }
 
@@ -128,7 +113,7 @@ public class EventVO {
         return groupingHash;
     }
 
-    public void setGroupingHash(String groupingHash) {
+    public void setGroupingHash(final String groupingHash) {
         this.groupingHash = groupingHash;
     }
 
@@ -136,7 +121,7 @@ public class EventVO {
         return metaData;
     }
 
-    public void setMetaData(MetaDataVO metaData) {
+    public void setMetaData(final MetaDataVO metaData) {
         this.metaData = metaData;
     }
 
@@ -144,7 +129,7 @@ public class EventVO {
         return exceptions;
     }
 
-    public void addExceptions(List<ExceptionVO> exceptions) {
+    public void addExceptions(final List<ExceptionVO> exceptions) {
         this.exceptions.addAll(exceptions);
     }
 }

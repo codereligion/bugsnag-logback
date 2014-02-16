@@ -209,7 +209,8 @@ public class ConfigurationTest {
 
         // then
         verify(contextAware).addError("Could not instantiate class: foo.bar.SomeRandomClass. " +
-                "Make sure that you provided the fully qualified class name and that the class has public access.");
+                "Make sure that you provided the fully qualified class name and that the class " +
+                "has a public accessible default constructor.");
     }
 
     @Test

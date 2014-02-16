@@ -18,23 +18,27 @@ package com.codereligion.bugsnag.logback.model;
 import com.google.common.collect.Lists;
 import java.util.List;
 
+/**
+ * Represents a notification being send to the bugsnag api.
+ *
+ * @author Sebastian Gröbler
+ */
 public class NotificationVO {
 
     /**
-     * The API Key associated with the project. Informs Bugsnag which project has generated this error.
+     * The api key associated with the project. Informs bugsnag which project has generated this error.
      */
     private String apiKey;
 
     /**
      * This object describes the notifier itself. These properties are used
-     * within Bugsnag to track error rates from a notifier.
+     * within bugsnag to track error rates from a notifier.
      */
     private NotifierVO notifier = new NotifierVO();
 
     /**
-     * An array of error events that Bugsnag should be notified of. A notifier
-     * can choose to group notices into an array to minimize network traffic, or
-     * can notify Bugsnag each time an event occurs.
+     * A list of error events that bugsnag should be notified of. In the current version of his notifier
+     * the list will contain only one event.
      */
     private List<EventVO> events = Lists.newArrayList();
 

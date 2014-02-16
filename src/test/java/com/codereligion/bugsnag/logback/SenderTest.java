@@ -23,6 +23,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -47,9 +48,12 @@ public class SenderTest {
     }
 
     @Test
-    public void doesNotSendWhenNotStopped() {
+    public void doesNotSendWhenStopped() {
         sender.start(configuration, contextAware);
         sender.stop();
+
+        reset(configuration, contextAware);
+
         sender.send(createNotificationVO());
         verifyZeroInteractions(configuration, contextAware);
     }

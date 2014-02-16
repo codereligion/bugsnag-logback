@@ -15,7 +15,6 @@
  */
 package com.codereligion.bugsnag.logback.model;
 
-import com.codereligion.bugsnag.logback.model.NotifierVO;
 import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -34,6 +33,6 @@ public class NotifierVOTest {
 
     @Test
     public void providesUrl() {
-        assertThat(new NotifierVO().getUrl(), is("https://github.com/sierragolf/bugsnag-logback"));
+        assertThat(new NotifierVO().getUrl(), is("https://github.com/codereligion/bugsnag-logback"));
     }
 }

@@ -17,6 +17,11 @@ package com.codereligion.bugsnag.logback;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 
+/**
+ * An enumeration of all structurally embedded meta data in the bugsnag model.
+ *
+ * @author Sebastian Gröbler
+ */
 public enum PredefinedMetaData {
 
     USER_ID("userId"),
@@ -31,10 +36,25 @@ public enum PredefinedMetaData {
         this.key = key;
     }
 
+    /**
+     * @return the key this enumeration maps to
+     */
     public String getKey() {
         return key;
     }
 
+    /**
+     * Tries to find the value for the given {@code key} in the following contexts in the given order:
+     *
+     * <ul>
+     *     <li>mapped diagnostic context (MDC)</li>
+     *     <li>logger context</li>
+     *     <li>system properties</li>
+     * </ul>
+     *
+     * @param loggingEvent the {@link ILoggingEvent} to get the MDC or logger context map from
+     * @return the value for the given {@code key} or {@code null} if none was found
+     */
     public String valueFor(final ILoggingEvent loggingEvent) {
 
         final String mdcProperty = loggingEvent.getMDCPropertyMap().get(key);

@@ -35,7 +35,7 @@ public class MockExceptionVO extends ExceptionVO {
     }
 
     public MockExceptionVO add(final StackTraceVO stackTraceVO) {
-        getStacktrace().add(stackTraceVO);
+        getStackTrace().add(stackTraceVO);
         return this;
     }
 }

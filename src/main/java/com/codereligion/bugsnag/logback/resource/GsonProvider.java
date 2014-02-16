@@ -20,17 +20,30 @@ import com.codereligion.bugsnag.logback.model.TabVO;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+/**
+ * Provides a {@link Gson} instance to serializes data with.
+ *
+ * @author Sebastian Gröbler
+ */
 public class GsonProvider {
 
     private final Gson gson;
 
-    public GsonProvider(final GsonFilterProvider gsonFilterProvider) {
+    /**
+     * Creates a new instance with the given {@code jsonFilterProvider}.
+     *
+     * @param jsonFilterProvider the {@link JsonFilterProvider} implementation to use
+     */
+    public GsonProvider(final JsonFilterProvider jsonFilterProvider) {
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(MetaDataVO.class, new MetaDataVOSerializer())
-                .registerTypeAdapter(TabVO.class, new TabVOSerializer(gsonFilterProvider))
+                .registerTypeAdapter(TabVO.class, new TabVOSerializer(jsonFilterProvider))
                 .create();
     }
 
+    /**
+     * @return a fully configured {@link Gson} instance
+     */
     public Gson getGson() {
         return gson;
     }

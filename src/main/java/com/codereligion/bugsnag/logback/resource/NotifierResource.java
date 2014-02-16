@@ -23,6 +23,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+/**
+ * The specification of the bugsnag endpoint.
+ *
+ * @author Sebastian Gröbler
+ */
 @Path("/")
 @Produces(MediaType.APPLICATION_JSON)
 public interface NotifierResource {

@@ -216,7 +216,7 @@ public class ConverterTest {
         final NotificationVO notification = converter.convertToNotification(loggingEvent);
         final EventVO event = notification.getEvents().get(0);
         final ExceptionVO exception = event.getExceptions().get(0);
-        final StackTraceVO stackTrace = exception.getStacktrace().get(0);
+        final StackTraceVO stackTrace = exception.getStackTrace().get(0);
 
         // then
         assertThat(stackTrace.getMethod(), is("com.some.package.SomeClassName.someMethodName"));
@@ -236,7 +236,7 @@ public class ConverterTest {
         final NotificationVO notification = converter.convertToNotification(loggingEvent);
         final EventVO event = notification.getEvents().get(0);
         final ExceptionVO exception = event.getExceptions().get(0);
-        final StackTraceVO stackTrace = exception.getStacktrace().get(0);
+        final StackTraceVO stackTrace = exception.getStackTrace().get(0);
 
         // then
         assertThat(stackTrace.getLineNumber(), is(42));
@@ -256,7 +256,7 @@ public class ConverterTest {
         final NotificationVO notification = converter.convertToNotification(loggingEvent);
         final EventVO event = notification.getEvents().get(0);
         final ExceptionVO exception = event.getExceptions().get(0);
-        final StackTraceVO stackTrace = exception.getStacktrace().get(0);
+        final StackTraceVO stackTrace = exception.getStackTrace().get(0);
 
         // then
         assertThat(stackTrace.getFile(), is("SomeFileName"));
@@ -276,7 +276,7 @@ public class ConverterTest {
         final NotificationVO notification = converter.convertToNotification(loggingEvent);
         final EventVO event = notification.getEvents().get(0);
         final ExceptionVO exception = event.getExceptions().get(0);
-        final StackTraceVO stackTrace = exception.getStacktrace().get(0);
+        final StackTraceVO stackTrace = exception.getStackTrace().get(0);
 
         // then
         assertThat(stackTrace.isInProject(), is(Boolean.FALSE));
@@ -298,7 +298,7 @@ public class ConverterTest {
         final NotificationVO notification = converter.convertToNotification(loggingEvent);
         final EventVO event = notification.getEvents().get(0);
         final ExceptionVO exception = event.getExceptions().get(0);
-        final StackTraceVO stackTrace = exception.getStacktrace().get(0);
+        final StackTraceVO stackTrace = exception.getStackTrace().get(0);
 
         // then
         assertThat(stackTrace.isInProject(), is(Boolean.TRUE));

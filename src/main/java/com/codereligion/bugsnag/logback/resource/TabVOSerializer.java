@@ -24,12 +24,25 @@ import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 import java.util.Map;
 
+/**
+ * Custom {@link JsonSerializer} for {@link TabVO}s which directly serializes the underlying data structure.
+ *
+ * <p/>Additionally this serializer filters out specified key/value pairs according to the given
+ * {@ink JsonFilterProvider}.
+ *
+ * @author Sebastian Gröbler
+ */
 public class TabVOSerializer implements JsonSerializer<TabVO> {
 
-    private final GsonFilterProvider gsonFilterProvider;
+    private final JsonFilterProvider jsonFilterProvider;
 
-    public TabVOSerializer(final GsonFilterProvider gsonFilterProvider) {
-        this.gsonFilterProvider = gsonFilterProvider;
+    /**
+     * Creates a new instance with the given {@code jsonFilterProvider}.
+     *
+     * @param jsonFilterProvider the {@link JsonFilterProvider} to use for filtering
+     */
+    public TabVOSerializer(final JsonFilterProvider jsonFilterProvider) {
+        this.jsonFilterProvider = jsonFilterProvider;
     }
 
     @Override
@@ -56,7 +69,7 @@ public class TabVOSerializer implements JsonSerializer<TabVO> {
     private void filterJsonObject(final JsonObject jsonObject) {
         for (final Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
             final String key = entry.getKey();
-            if (gsonFilterProvider.isIgnoredByFilter(key)) {
+            if (jsonFilterProvider.isIgnoredByFilter(key)) {
                 jsonObject.remove(key);
             } else {
                 filterJsonElement(entry.getValue());
