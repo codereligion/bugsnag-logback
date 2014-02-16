@@ -42,7 +42,7 @@ public class Sender {
     private Client client;
     private boolean started;
 
-    public void start(final Configuration configuration,  final ContextAware contextAware) {
+    public void start(final Configuration configuration, final ContextAware contextAware) {
         this.configuration = configuration;
         this.contextAware = contextAware;
         this.gsonProvider = new GsonProvider(configuration);

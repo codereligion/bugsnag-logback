@@ -22,12 +22,20 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
 import java.util.Set;
 
+/**
+ * Converts {@link ILoggingEvent}s to {@link NotificationVO}s and sends them to the Bugsnag API.
+ *
+ * @author Sebastian Gröbler
+ */
 public class Appender extends AppenderBase<ILoggingEvent> {
 
     private final Configuration configuration;
     private final Converter converter;
     private final Sender sender;
 
+    /**
+     * Constructors a new appender.
+     */
     public Appender() {
         this(new Configuration(), new Sender());
     }
@@ -63,61 +71,122 @@ public class Appender extends AppenderBase<ILoggingEvent> {
     @Override
     protected void append(final ILoggingEvent event) {
 
-        if (!isStarted() || configuration.isStageIgnored()) {
+        if (!isStarted() || configuration.isStageIgnored() || shouldNotNotifyFor(event)) {
             return;
         }
 
-        if (containsException(event) && shouldNotifyFor(event)) {
-            final NotificationVO notification = converter.convertToNotification(event);
-            sender.send(notification);
-        }
+        final NotificationVO notification = converter.convertToNotification(event);
+        sender.send(notification);
     }
 
-    private boolean containsException(final ILoggingEvent event) {
-        return event.getThrowableProxy() != null;
-    }
-
-    private boolean shouldNotifyFor(final ILoggingEvent event) {
-        return configuration.shouldNotifyFor(event.getThrowableProxy().getClassName());
-    }
-
-    public void setSslEnabled(final boolean sslEnabled) {
-        this.configuration.setSslEnabled(sslEnabled);
-    }
-
-    public void setEndpoint(final String endpoint) {
-        this.configuration.setEndpoint(endpoint);
-    }
-
+    /**
+     * Sets the api key used for authentication and authorization with the bugsnag API.
+     *
+     * @param apiKey the api key
+     */
     public void setApiKey(final String apiKey) {
         this.configuration.setApiKey(apiKey);
     }
 
+    /**
+     * Allows switching between http and https for communication with the bugsnag API.
+     *
+     * <p/>Optional, default: false.
+     *
+     * @param sslEnabled true for https, false for http
+     */
+    public void setSslEnabled(final boolean sslEnabled) {
+        this.configuration.setSslEnabled(sslEnabled);
+    }
+
+    /**
+     * Sets the bugsnag API endpoint's host name.
+     *
+     * <p/>Optional, default: notify.bugsnag.com
+     *
+     * @param endpoint the host name
+     */
+    public void setEndpoint(final String endpoint) {
+        this.configuration.setEndpoint(endpoint);
+    }
+
+    /**
+     * Sets the release stage used to check whether notification is enabled on this stage.
+     *
+     * <p/>Optional, default: production
+     *
+     * @param releaseStage the release stage
+     */
     public void setReleaseStage(final String releaseStage) {
         this.configuration.setReleaseStage(releaseStage);
     }
 
+    /**
+     * Sets the notifiable release stages.
+     *
+     * <p/>Optional, default: empty
+     *
+     * @param notifyReleaseStages a comma separated set of release stages
+     */
     public void setNotifyReleaseStages(final String notifyReleaseStages) {
-        this.configuration.setNotifyReleaseStages(splitByCommaToArray(notifyReleaseStages));
+        this.configuration.setNotifyReleaseStages(splitByCommaToSet(notifyReleaseStages));
     }
 
+    /**
+     * Sets filters used to filter out unwanted key value pairs from data provided by the
+     * specified {@link MetaDataProvider} implementation.
+     *
+     * <p/>Optional, default: empty
+     *
+     * @param filters a comma separated set of filter words
+     */
     public void setFilters(final String filters) {
-        this.configuration.setFilters(splitByCommaToArray(filters));
+        this.configuration.setFilters(splitByCommaToSet(filters));
     }
 
+    /**
+     * Sets project packages used to highlight project specific lines in the exception's
+     * stack trace.
+     *
+     * <p/>Optional, default: empty
+     *
+     * @param projectPackages a comma separated set of package names
+     */
     public void setProjectPackages(final String projectPackages) {
-        this.configuration.setProjectPackages(splitByCommaToArray(projectPackages));
+        this.configuration.setProjectPackages(splitByCommaToSet(projectPackages));
     }
 
+    /**
+     * Sets ignored classes used to filter throwables which should not be send to the api.
+     *
+     * <p/>Optional, default: empty
+     *
+     * @param ignoreClasses a comma separated set of fully qualified class names
+     */
     public void setIgnoreClasses(final String ignoreClasses) {
-        this.configuration.setIgnoreClasses(splitByCommaToArray(ignoreClasses));
+        this.configuration.setIgnoreClasses(splitByCommaToSet(ignoreClasses));
     }
 
+    /**
+     * Sets the {@link MetaDataProvider} implementation.
+     *
+     * <p/>Optional
+     *
+     * @param metaDataProviderClassName the fully qualified class name
+     */
     public void setMetaDataProvider(final String metaDataProviderClassName) {
         this.configuration.setMetaDataProviderClassName(metaDataProviderClassName);
     }
 
-    private Set<String> splitByCommaToArray(final String input) {
+    private Set<String> splitByCommaToSet(final String input) {
         return Sets.newHashSet(Splitter.on(",").trimResults().split(input));
+    }
+
+    private boolean shouldNotNotifyFor(final ILoggingEvent event) {
+        return !containsException(event) || !configuration.shouldNotifyFor(event.getThrowableProxy().getClassName());
+    }
+
+    private boolean containsException(final ILoggingEvent event) {
+        return event.getThrowableProxy() != null;
     }
 }

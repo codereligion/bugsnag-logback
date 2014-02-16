@@ -18,7 +18,18 @@ package com.codereligion.bugsnag.logback;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.codereligion.bugsnag.logback.model.MetaDataVO;
 
+/**
+ * Allows to add meta for each notification.
+ *
+ * @author Sebastian Gröbler
+ */
 public interface MetaDataProvider {
 
+    /**
+     * Provides an instance of {@link MetaDataVO}.
+     *
+     * @param loggingEvent implementation of {@link ILoggingEvent}, cannot be {@code null}
+     * @return an instance of {@link MetaDataVO} or {@code null}
+     */
     MetaDataVO provide(ILoggingEvent loggingEvent);
 }
