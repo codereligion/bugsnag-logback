@@ -41,7 +41,7 @@ public class Configuration implements JsonFilterProvider {
     private String apiKey;
     private String releaseStage = DEFAULT_RELEASE_STAGE;
     private boolean sslEnabled = DEFAULT_USE_SSL;
-    private Set<String> notifyReleaseStages = Sets.newHashSet();
+    private Set<String> notifyReleaseStages = Sets.newHashSet(DEFAULT_RELEASE_STAGE);
     private Set<String> filters = Sets.newHashSet();
     private Set<String> projectPackages = Sets.newHashSet();
     private Set<String> ignoreClasses = Sets.newHashSet();
@@ -176,11 +176,6 @@ public class Configuration implements JsonFilterProvider {
      * {@code notifyReleaseStages}.
      */
     public boolean isStageIgnored() {
-
-        if (notifyReleaseStages.isEmpty()) {
-            return false;
-        }
-
         return !notifyReleaseStages.contains(releaseStage);
     }
 

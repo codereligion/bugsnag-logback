@@ -20,7 +20,6 @@ import ch.qos.logback.core.spi.ContextAware;
 import com.codereligion.bugsnag.logback.integration.CustomMetaDataProvider;
 import com.codereligion.bugsnag.logback.model.MetaDataVO;
 import com.google.common.collect.Sets;
-import java.util.HashSet;
 import org.junit.Test;
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.is;
@@ -42,6 +41,11 @@ public class ConfigurationTest {
     @Test
     public void defaultsToProductionReleaseStage() {
         assertThat(configuration.getReleaseStage(), is("production"));
+    }
+
+    @Test
+    public void defaultReleaseStageIsNotIgnored() {
+        assertThat(configuration.isStageIgnored(), is(Boolean.FALSE));
     }
 
     @Test
@@ -238,14 +242,6 @@ public class ConfigurationTest {
     @Test
     public void doesNotIgnoreStageWhenPresentInTheNotifyReleaseStages() {
         configuration.setNotifyReleaseStages(Sets.newHashSet("staging", "live"));
-        configuration.setReleaseStage("staging");
-
-        assertThat(configuration.isStageIgnored(), is(false));
-    }
-
-    @Test
-    public void doesNotIgnoreStageWhenTheNotifyReleaseStagesAreEmpty() {
-        configuration.setNotifyReleaseStages(new HashSet<String>());
         configuration.setReleaseStage("staging");
 
         assertThat(configuration.isStageIgnored(), is(false));
