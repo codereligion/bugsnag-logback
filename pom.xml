@@ -13,7 +13,7 @@
 
     <name>Bugsnag-Logback</name>
     <description>Bugsnag notifier for Logback</description>
-    <url>https://github.com/SierraGolf/bugsnag-logback</url>
+    <url>https://github.com/codereligion/bugsnag-logback</url>
 
     <developers>
         <developer>
