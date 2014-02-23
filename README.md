@@ -28,7 +28,7 @@ A logback appender which pushes any event containing an exception to bugsnag.
     <!-- optional (default: production), the current release stage for the application -->
     <releaseStage>staging</releaseStage>
 
-    <!-- optional (default: empty), comma separated set of stage names which is matched against
+    <!-- optional (default: production), comma separated set of stage names which is matched against
     the releaseStage to decide whether to send the notification or not -->
     <notifyReleaseStages>staging,production</notifyReleaseStages>
 

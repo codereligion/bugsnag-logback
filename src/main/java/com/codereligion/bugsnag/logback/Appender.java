@@ -124,7 +124,7 @@ public class Appender extends AppenderBase<ILoggingEvent> {
     /**
      * Sets the notifiable release stages.
      *
-     * <p/>Optional, default: empty
+     * <p/>Optional, default: production
      *
      * @param notifyReleaseStages a comma separated set of release stages
      */

@@ -28,7 +28,7 @@ A logback appender which pushes any event containing an exception to bugsnag.
     <!-- optional (default: production), the current release stage for the application -->
     <releaseStage>staging</releaseStage>
 
-    <!-- optional (default: empty), comma separated set of stage names which is matched against
+    <!-- optional (default: production), comma separated set of stage names which is matched against
     the releaseStage to decide whether to send the notification or not -->
     <notifyReleaseStages>staging,production</notifyReleaseStages>
 
@@ -45,7 +45,7 @@ A logback appender which pushes any event containing an exception to bugsnag.
     <filters>password,key</filters>
 
     <!-- optional, fully qualified name of your MetaDataProvider implementation -->
-    <metaDataProviderClassName>com.your.project.MetaDataProvider</metaDataProviderClassName>
+    <metaDataProvider>com.your.project.MetaDataProvider</metaDataProvider>
 
     <!-- optional (default: notify.bugsnag.com), the url to notify -->
     <endpoint>notify.bugsnag.com</endpoint>
