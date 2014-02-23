@@ -23,9 +23,9 @@
     </developers>
 
     <scm>
-        <url>scm:git:ssh://git@github.com:SierraGolf/bugsnag-logback.git</url>
-        <connection>scm:git:ssh://git@github.com:SierraGolf/bugsnag-logback.git</connection>
-        <developerConnection>scm:git:git@github.com:SierraGolf/bugsnag-logback.git</developerConnection>
+        <url>scm:git:ssh://git@github.com:codereligion/bugsnag-logback.git</url>
+        <connection>scm:git:ssh://git@github.com:codereligion/bugsnag-logback.git</connection>
+        <developerConnection>scm:git:git@github.com:codereligion/bugsnag-logback.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
