@@ -45,7 +45,7 @@ A logback appender which pushes any event containing an exception to bugsnag.
     <filters>password,key</filters>
 
     <!-- optional, fully qualified name of your MetaDataProvider implementation -->
-    <metaDataProviderClassName>com.your.project.MetaDataProvider</metaDataProviderClassName>
+    <metaDataProvider>com.your.project.MetaDataProvider</metaDataProvider>
 
     <!-- optional (default: notify.bugsnag.com), the url to notify -->
     <endpoint>notify.bugsnag.com</endpoint>
