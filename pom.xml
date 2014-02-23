@@ -510,6 +510,32 @@
                 </plugins>
             </build>
         </profile>
+
+        <profile>
+            <id>commit.readme.changes</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-scm-plugin</artifactId>
+                        <version>${scm.plugin.version}</version>
+                        <configuration>
+                            <includes>README.md</includes>
+                            <message>[maven-release-plugin] updating version in README.md</message>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>update.readme.changes</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>checkin</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
 </project>
