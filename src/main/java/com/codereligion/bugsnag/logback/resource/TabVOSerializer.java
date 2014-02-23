@@ -28,7 +28,7 @@ import java.util.Map;
  * Custom {@link JsonSerializer} for {@link TabVO}s which directly serializes the underlying data structure.
  *
  * <p/>Additionally this serializer filters out specified key/value pairs according to the given
- * {@ink JsonFilterProvider}.
+ * {@link JsonFilterProvider}.
  *
  * @author Sebastian Gröbler
  */
