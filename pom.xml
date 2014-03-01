@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.codereligion</groupId>
     <artifactId>bugsnag-logback</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0-SNAPSHOT</version>
 
     <name>Bugsnag-Logback</name>
     <description>Bugsnag notifier for Logback</description>
@@ -25,7 +25,7 @@
         <url>scm:git:ssh://git@github.com:codereligion/bugsnag-logback.git</url>
         <connection>scm:git:ssh://git@github.com:codereligion/bugsnag-logback.git</connection>
         <developerConnection>scm:git:git@github.com:codereligion/bugsnag-logback.git</developerConnection>
-        <tag>bugsnag-logback-1.0.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <licenses>
