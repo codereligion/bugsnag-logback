@@ -12,7 +12,7 @@ A logback appender which pushes any event containing an exception to bugsnag.
 <dependency>
 	<groupId>com.codereligion</groupId>
 	<artifactId>bugsnag-logback</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 </dependency>
 ```
 
