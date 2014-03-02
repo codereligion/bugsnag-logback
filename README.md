@@ -7,7 +7,7 @@ A logback appender which pushes any event containing an exception to bugsnag.
 * logback
 * dependencies see [maven pom](pom.xml)
 
-## Maven ##
+## Maven
 ```xml
 <dependency>
 	<groupId>com.codereligion</groupId>
@@ -113,3 +113,26 @@ public class ExampleMetaDataProvider implements MetaDataProvider {
 }
 
 ```
+
+## Reporting uncaught exceptions
+Simply implement a ```Thread.UncaughtExceptionHandler``` like this:
+```java
+package com.codereligion.bugsnag.logback;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class ExampleUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ExampleUncaughtExceptionHandler.class);
+
+    @Override
+    public void uncaughtException(Thread t, Throwable e) {
+        LOG.error("Uncaught exception", t);
+    }
+}
+
+```
+
+register it like this: ```Thread.setDefaultUncaughtExceptionHandler(Thread.UncaughtExceptionHandler)``` and configure
+your logback.xml accordingly.

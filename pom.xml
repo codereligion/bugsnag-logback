@@ -201,7 +201,7 @@
                 </executions>
             </plugin>
 
-            <!-- read ExampleMetaDataProvider.java into property -->
+            <!-- read examples into properties -->
             <plugin>
                 <groupId>org.codehaus.gmaven</groupId>
                 <artifactId>gmaven-plugin</artifactId>
@@ -209,10 +209,13 @@
                 <configuration>
                     <properties>
                         <exampleMetaDataProviderPath>${project.basedir}/src/example/java/com/codereligion/bugsnag/logback/ExampleMetaDataProvider.java</exampleMetaDataProviderPath>
+                        <exampleUncaughtExceptionHandlerPath>${project.basedir}/src/example/java/com/codereligion/bugsnag/logback/ExampleUncaughtExceptionHandler.java</exampleUncaughtExceptionHandlerPath>
                     </properties>
                     <source>
                         project.properties.exampleMetaDataProvider = new
                         File(project.properties.exampleMetaDataProviderPath).getText()
+                        project.properties.exampleUncaughtExceptionHandler = new
+                        File(project.properties.exampleUncaughtExceptionHandlerPath).getText()
                     </source>
                 </configuration>
                 <executions>
@@ -302,6 +305,7 @@
                     </includes>
                     <excludes>
                         <exclude>**/ExampleMetaDataProvider.java</exclude>
+                        <exclude>**/ExampleUncaughtExceptionHandler.java</exclude>
                         <exclude>**/logback-test.xml</exclude>
                     </excludes>
                 </configuration>

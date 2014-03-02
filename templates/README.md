@@ -7,7 +7,7 @@ A logback appender which pushes any event containing an exception to bugsnag.
 * logback
 * dependencies see [maven pom](pom.xml)
 
-## Maven ##
+## Maven
 ```xml
 <dependency>
 	<groupId>com.codereligion</groupId>
@@ -87,3 +87,12 @@ Example:
 ```java
 ${exampleMetaDataProvider}
 ```
+
+## Reporting uncaught exceptions
+Simply implement a ```Thread.UncaughtExceptionHandler``` like this:
+```java
+${exampleUncaughtExceptionHandler}
+```
+
+register it like this: ```Thread.setDefaultUncaughtExceptionHandler(Thread.UncaughtExceptionHandler)``` and configure
+your logback.xml accordingly.
