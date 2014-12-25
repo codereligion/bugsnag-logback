@@ -8,7 +8,7 @@ We welcome any feature requests or bug reports. Keep in mind to be as detailed a
 ### Setup
 To develop this project you should have the following setup:
 * Java 1.6
-* Maven 3
+* Maven 3.2.2
 
 ### Build
 We use Jenkins CI to run [our builds](http://jenkins.codereligion.com/view/bugsnag-logback/job/bugsnag-logback-master-build-flow/).
