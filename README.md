@@ -3,7 +3,7 @@
 A logback appender which pushes any event containing an exception to bugsnag.
 
 ## Requirements
-* Java 1.5 or higher
+* Java 1.6 or higher
 * logback
 * dependencies see [maven pom](pom.xml)
 
