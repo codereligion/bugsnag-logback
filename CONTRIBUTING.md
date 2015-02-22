@@ -7,14 +7,14 @@ We welcome any feature requests or bug reports. Keep in mind to be as detailed a
 
 ### Setup
 To develop this project you should have the following setup:
-* Java 1.6
-* Maven 3.2.2
+* Java 1.6 or higher
+* Maven 3.2.2 or higher
 
 ### Build
 We use Jenkins CI to run [our builds](http://jenkins.codereligion.com/view/bugsnag-logback/job/bugsnag-logback-master-build-flow/).
 
 #### Java version compliance
-The byte code is and should be compliant to all Java versions starting and including 1.5.
+The byte code is and should be compliant to all Java versions starting and including 1.6.
 
 #### Continuous integration and local testing
 CI compiles the code and runs the tests for Oracle JDK 6u29. It will fail on any compiler warnings. In order to debug compiler warnings and errors more efficiently we recommend to install
