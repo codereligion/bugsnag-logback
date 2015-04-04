@@ -270,6 +270,7 @@
                     <compilerArgs>
                         <arg>-proc:none</arg>
                         <arg>-Werror</arg>
+                        <arg>-Xlint</arg>
                         <arg>-Xlint:-options</arg>
                     </compilerArgs>
                 </configuration>
