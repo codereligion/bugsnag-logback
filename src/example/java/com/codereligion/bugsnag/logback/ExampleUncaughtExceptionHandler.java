@@ -8,7 +8,7 @@ public class ExampleUncaughtExceptionHandler implements Thread.UncaughtException
     private static final Logger LOG = LoggerFactory.getLogger(ExampleUncaughtExceptionHandler.class);
 
     @Override
-    public void uncaughtException(Thread t, Throwable e) {
-        LOG.error("Uncaught exception", t);
+    public void uncaughtException(Thread thread, Throwable throwable) {
+        LOG.error("Uncaught exception", throwable);
     }
 }
