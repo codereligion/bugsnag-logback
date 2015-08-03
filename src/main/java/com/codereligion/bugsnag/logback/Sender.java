@@ -22,8 +22,8 @@ import com.codereligion.bugsnag.logback.resource.GsonProvider;
 import com.codereligion.bugsnag.logback.resource.NotifierResource;
 import com.google.gson.Gson;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
 /**
@@ -134,8 +134,9 @@ public class Sender {
     private Client createClient() {
         final Gson gson = gsonProvider.getGson();
 
-        return ClientBuilder
-                .newClient()
-                .register(new GsonMessageBodyWriter(gson));
+        ResteasyClientBuilder clientBuilder = new ResteasyClientBuilder().connectionPoolSize(100);
+        return clientBuilder
+            .build()
+            .register(new GsonMessageBodyWriter(gson));
     }
 }
