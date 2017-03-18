@@ -1,4 +1,4 @@
-# Bugsnag-Logback [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.codereligion/bugsnag-logback/badge.svg?style=plastic)](https://maven-badges.herokuapp.com/maven-central/com.codereligion/bugsnag-logback)
+# Bugsnag-Logback [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.codereligion/bugsnag-logback/badge.svg?style=plastic)](https://maven-badges.herokuapp.com/maven-central/com.codereligion/bugsnag-logback) [![Travis branch](https://img.shields.io/travis/codereligion/bugsnag-logback/master.svg?style=plastic)](https://travis-ci.org/codereligion/bugsnag-logback)
 
 A logback appender which pushes any event containing an exception to bugsnag.
 
