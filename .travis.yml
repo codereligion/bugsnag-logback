@@ -1,0 +1,11 @@
+language: java
+
+jdk:
+    - openjdk7
+    - oraclejdk7
+
+notifications:
+    email:
+        on_failure: change
+
+script: mvn clean install -Punit.test -Pintegration.test
