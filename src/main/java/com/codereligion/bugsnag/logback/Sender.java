@@ -100,9 +100,9 @@ public class Sender {
         Response response = null;
 
         try {
-            final ResteasyWebTarget resteasyWebTarget = (ResteasyWebTarget) client.target(endpoint);
-            final NotifierResource notifierResource= resteasyWebTarget.proxy(NotifierResource.class);
-            response = notifierResource.sendNotification(notification);
+	    final WebTarget target = client.target(endpoint);
+            response = target.request(MediaType.APPLICATION_JSON).put(Entity.entity(notification,MediaType.APPLICATION_JSON));
+
             final int statusCode = response.getStatus();
 
             final boolean isOk = StatusCode.OK == statusCode;
