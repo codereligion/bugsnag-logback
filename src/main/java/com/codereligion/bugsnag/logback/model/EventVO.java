@@ -26,6 +26,11 @@ import java.util.List;
 public class EventVO {
 
     /**
+     * The version number of the payload. If not set to 2+, Severity will not be supported.
+     */
+    private String payloadVersion = "2";
+
+    /**
      * A unique identifier for a user affected by this event.
      */
     private String userId;
@@ -58,6 +63,11 @@ public class EventVO {
      * the bugsnag dashboard.
      */
     private String groupingHash;
+
+    /**
+     * The severity of the error. This can be set to: error, warning, or info
+     */
+    private String severity;
 
     /**
      * An object containing any further data which should be attached to this event.
@@ -115,6 +125,14 @@ public class EventVO {
 
     public void setGroupingHash(final String groupingHash) {
         this.groupingHash = groupingHash;
+    }
+
+    public String getSeverity() {
+        return severity;
+    }
+
+    public void setSeverity(String severity) {
+        this.severity = severity;
     }
 
     public MetaDataVO getMetaData() {

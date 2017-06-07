@@ -15,6 +15,7 @@
  */
 package com.codereligion.bugsnag.logback;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.StackTraceElementProxy;
@@ -63,12 +64,24 @@ public class Converter {
         event.setReleaseStage(configuration.getReleaseStage());
         event.addExceptions(convertToExceptions(loggingEvent.getThrowableProxy()));
         event.setMetaData(convertToMetaData(loggingEvent));
+        event.setSeverity(convertToSeverity(loggingEvent.getLevel()));
         event.setUserId(PredefinedMetaData.USER_ID.valueFor(loggingEvent));
         event.setAppVersion(PredefinedMetaData.APP_VERSION.valueFor(loggingEvent));
         event.setOsVersion(PredefinedMetaData.OS_VERSION.valueFor(loggingEvent));
         event.setContext(PredefinedMetaData.CONTEXT.valueFor(loggingEvent));
         event.setGroupingHash(PredefinedMetaData.GROUPING_HASH.valueFor(loggingEvent));
         return Collections.singletonList(event);
+    }
+
+    private String convertToSeverity(Level level) {
+        if(level==Level.ERROR){
+            return "error";
+        }else if(level == Level.WARN){
+            return "warning";
+        }else if(level == Level.INFO){
+            return "info";
+        }
+        return null;
     }
 
     private MetaDataVO convertToMetaData(final ILoggingEvent loggingEvent) {
