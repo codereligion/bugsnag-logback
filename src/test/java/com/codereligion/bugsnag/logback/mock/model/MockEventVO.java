@@ -60,6 +60,11 @@ public class MockEventVO extends EventVO {
         return this;
     }
 
+    public MockEventVO withSeverity(final String severity) {
+        setSeverity(severity);
+        return this;
+    }
+
     public MockEventVO with(final MetaDataVO metaData) {
         setMetaData(metaData);
         return this;

@@ -73,7 +73,7 @@ public class Converter {
         return Collections.singletonList(event);
     }
 
-    private String convertToSeverity(Level level) {
+    private String convertToSeverity(final Level level) {
         if(level==Level.ERROR){
             return "error";
         }else if(level == Level.WARN){

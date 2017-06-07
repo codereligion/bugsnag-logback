@@ -25,11 +25,13 @@ import com.codereligion.bugsnag.logback.mock.model.MockNotificationVO;
 import com.codereligion.bugsnag.logback.resource.GsonProvider;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.gson.Gson;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import static com.codereligion.bugsnag.logback.mock.logging.MockLoggingEvent.createLoggingEvent;
 import static com.codereligion.bugsnag.logback.mock.logging.MockStackTraceElement.createStackTraceElement;
 import static com.codereligion.bugsnag.logback.mock.logging.MockThrowableProxy.createThrowableProxy;
@@ -37,13 +39,7 @@ import static com.codereligion.bugsnag.logback.mock.model.MockEventVO.createEven
 import static com.codereligion.bugsnag.logback.mock.model.MockExceptionVO.createExceptionVO;
 import static com.codereligion.bugsnag.logback.mock.model.MockNotificationVO.createNotificationVO;
 import static com.codereligion.bugsnag.logback.mock.model.MockStackTraceVO.createStackTraceVO;
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.mockito.Mockito.mock;
 
 public class SerializationFullIntegrationTest {
@@ -120,6 +116,7 @@ public class SerializationFullIntegrationTest {
                         .withOsVersion("someOsVersion")
                         .withContext("someContext")
                         .withGroupingHash("someGroupingHash")
+                        .withSeverity("error")
                         .with(MockMetaDataVO.createMetaDataVO()
                                 .add("Logging", "level", "ERROR")
                                 .add("Logging", "message", "someMessage")
